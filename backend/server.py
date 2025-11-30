@@ -513,6 +513,24 @@ async def delete_relationship(parent_id: str, child_id: str):
         {"$pull": {"parent_ids": parent_id}}
     )
     
+    # Get requirement details for logging
+    parent_req = await db.requirements.find_one({"id": parent_id})
+    child_req = await db.requirements.find_one({"id": child_id})
+    
+    if parent_req and child_req:
+        # Log relationship deletion for both requirements
+        await create_change_log_entry(
+            requirement_id=parent_id,
+            change_type="relationship_removed",
+            change_description=f"Child relationship removed: {parent_req['req_id']} → {child_req['req_id']}"
+        )
+        
+        await create_change_log_entry(
+            requirement_id=child_id,
+            change_type="relationship_removed",
+            change_description=f"Parent relationship removed: {parent_req['req_id']} → {child_req['req_id']}"
+        )
+    
     return {"message": "Relationship deleted"}
 
 @api_router.put("/requirements/batch")
