@@ -197,7 +197,7 @@ const GraphView = ({ activeProject, activeGroup, groups }) => {
       document.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('keyup', handleKeyUp);
     };
-  }, [firstSelectedNode]);
+  }, [firstSelectedNode, selectedEdge]);
 
   useEffect(() => {
     if (requirements.length > 0) {
