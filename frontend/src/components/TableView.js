@@ -30,6 +30,15 @@ const TableView = ({ activeProject, activeGroup, groups }) => {
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredRequirements, setFilteredRequirements] = useState([]);
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [newRequirement, setNewRequirement] = useState({
+    title: '',
+    text: '',
+    status: 'Draft',
+    verification_methods: [],
+    group_id: '',
+    chapter_id: ''
+  });
 
   useEffect(() => {
     if (activeProject?.id) {
