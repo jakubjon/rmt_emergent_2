@@ -52,7 +52,7 @@ const GroupNode = ({ data }) => {
   );
 };
 
-// Custom node component for requirements
+// Custom node component for requirements with handles
 const RequirementNode = ({ data, selected }) => {
   const getStatusColor = (status) => {
     switch (status) {
@@ -66,46 +66,76 @@ const RequirementNode = ({ data, selected }) => {
   };
 
   return (
-    <div 
-      className={`px-4 py-3 rounded-lg border-2 bg-white shadow-lg transition-all duration-200 min-w-[200px] ${
-        selected ? 'border-blue-500 shadow-xl' : 'border-slate-200 hover:border-slate-300'
-      }`}
-      style={{ 
-        borderLeftColor: getStatusColor(data.status),
-        borderLeftWidth: '4px'
-      }}
-    >
-      <div className="flex items-center justify-between mb-2">
-        <Badge variant="outline" className="text-xs font-mono">
-          {data.req_id}
-        </Badge>
-        <Badge 
-          variant="secondary" 
-          className="text-xs"
-          style={{ 
-            backgroundColor: `${getStatusColor(data.status)}20`,
-            color: getStatusColor(data.status)
-          }}
-        >
-          {data.status}
-        </Badge>
-      </div>
-      <div className="text-sm font-medium text-slate-900 mb-1 line-clamp-2">
-        {data.title}
-      </div>
-      {data.verification_methods?.length > 0 && (
-        <div className="flex flex-wrap gap-1">
-          {data.verification_methods.map((method, idx) => (
-            <span 
-              key={idx}
-              className="text-xs px-1 py-0.5 bg-slate-100 text-slate-600 rounded"
-            >
-              {method.charAt(0)}
-            </span>
-          ))}
+    <>
+      {/* Source Handle (top) - for outgoing connections */}
+      <Handle
+        type="source"
+        position={Position.Right}
+        id="source"
+        style={{ 
+          background: '#10b981', 
+          width: 12, 
+          height: 12,
+          border: '2px solid white',
+          boxShadow: '0 0 0 2px #10b981'
+        }}
+      />
+      
+      {/* Target Handle (bottom) - for incoming connections */}
+      <Handle
+        type="target"
+        position={Position.Left}
+        id="target"
+        style={{ 
+          background: '#3b82f6', 
+          width: 12, 
+          height: 12,
+          border: '2px solid white',
+          boxShadow: '0 0 0 2px #3b82f6'
+        }}
+      />
+      
+      <div 
+        className={`px-4 py-3 rounded-lg border-2 bg-white shadow-lg transition-all duration-200 min-w-[200px] ${
+          selected ? 'border-blue-500 shadow-xl' : 'border-slate-200 hover:border-slate-300'
+        }`}
+        style={{ 
+          borderLeftColor: getStatusColor(data.status),
+          borderLeftWidth: '4px'
+        }}
+      >
+        <div className="flex items-center justify-between mb-2">
+          <Badge variant="outline" className="text-xs font-mono">
+            {data.req_id}
+          </Badge>
+          <Badge 
+            variant="secondary" 
+            className="text-xs"
+            style={{ 
+              backgroundColor: `${getStatusColor(data.status)}20`,
+              color: getStatusColor(data.status)
+            }}
+          >
+            {data.status}
+          </Badge>
         </div>
-      )}
-    </div>
+        <div className="text-sm font-medium text-slate-900 mb-1 line-clamp-2">
+          {data.title}
+        </div>
+        {data.verification_methods?.length > 0 && (
+          <div className="flex flex-wrap gap-1">
+            {data.verification_methods.map((method, idx) => (
+              <span 
+                key={idx}
+                className="text-xs px-1 py-0.5 bg-slate-100 text-slate-600 rounded"
+              >
+                {method.charAt(0)}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+    </>
   );
 };
 
