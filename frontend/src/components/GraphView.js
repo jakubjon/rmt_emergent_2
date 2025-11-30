@@ -216,6 +216,91 @@ const GraphView = ({ activeProject, activeGroup, groups }) => {
     [setEdges]
   );
 
+  // Handle node clicks for relationship creation
+  const handleNodeClick = useCallback(async (event, node) => {
+    if (!isCtrlPressed) return;
+
+    if (!firstSelectedNode) {
+      // First node selection
+      setFirstSelectedNode(node);
+      toast.info(`Selected parent: ${node.data.req_id}. Now select child requirement.`);
+    } else if (firstSelectedNode.id !== node.id) {
+      // Second node selection - create relationship
+      setSecondSelectedNode(node);
+      
+      try {
+        const relationshipData = {
+          parent_id: firstSelectedNode.id,
+          child_id: node.id
+        };
+        
+        await axios.post(`${API}/requirements/relationships`, relationshipData);
+        
+        // Add the new edge to the graph
+        const newEdge = {
+          id: `${firstSelectedNode.id}-${node.id}`,
+          source: firstSelectedNode.id,
+          target: node.id,
+          type: 'smoothstep',
+          animated: false,
+          style: { stroke: '#10b981', strokeWidth: 3 },
+          markerEnd: {
+            type: 'arrowclosed',
+            color: '#10b981',
+          },
+        };
+        
+        setEdges((eds) => [...eds, newEdge]);
+        
+        toast.success(`Created relationship: ${firstSelectedNode.data.req_id} → ${node.data.req_id}`);
+        
+        // Reset selection
+        setFirstSelectedNode(null);
+        setSecondSelectedNode(null);
+        
+        // Refresh requirements to get updated parent/child data
+        await fetchRequirements();
+        
+      } catch (error) {
+        console.error('Error creating relationship:', error);
+        toast.error('Failed to create relationship');
+        setFirstSelectedNode(null);
+        setSecondSelectedNode(null);
+      }
+    }
+  }, [isCtrlPressed, firstSelectedNode, setEdges]);
+
+  // Handle edge deletion
+  const handleDeleteSelectedEdge = async () => {
+    // This would be called when user selects an edge and presses Delete
+    // For now, we'll implement a simpler version
+  };
+
+  // Handle edge click for deletion
+  const handleEdgeClick = useCallback((event, edge) => {
+    if (event.key === 'Delete' || confirm('Delete this relationship?')) {
+      deleteRelationship(edge.source, edge.target);
+    }
+  }, []);
+
+  const deleteRelationship = async (parentId, childId) => {
+    try {
+      await axios.delete(`${API}/requirements/relationships/${parentId}/${childId}`);
+      
+      // Remove the edge from the graph
+      setEdges((eds) => eds.filter(e => !(e.source === parentId && e.target === childId)));
+      
+      toast.success('Relationship deleted');
+      
+      // Refresh requirements to get updated parent/child data
+      await fetchRequirements();
+      
+    } catch (error) {
+      console.error('Error deleting relationship:', error);
+      toast.error('Failed to delete relationship');
+    }
+  };
+
   const handleGroupSelection = (groupIds) => {
     setSelectedGroups(groupIds);
   };
