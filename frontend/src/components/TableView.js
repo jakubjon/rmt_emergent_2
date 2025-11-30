@@ -110,10 +110,7 @@ const TableView = ({ activeProject, activeGroup, groups }) => {
         verification_methods: newRequirement.verification_methods.filter(Boolean)
       };
 
-      const response = await axios.post(`${API}/requirements`, requirementData);
-      
-      // Add new requirement to list
-      setRequirements(prev => [response.data, ...prev]);
+      await createRequirement(requirementData);
       
       // Reset form
       setNewRequirement({
