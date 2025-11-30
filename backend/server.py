@@ -535,11 +535,6 @@ async def delete_requirement_with_logging(requirement_id: str, actor: Optional[s
         changed_by=actor or "System",
     )
 
-    requirement = await db.requirements.find_one({"id": requirement_id})
-    if not requirement:
-        raise HTTPException(status_code=404, detail="Requirement not found")
-    return Requirement(**parse_from_mongo(requirement))
-
 @api_router.put("/requirements/{requirement_id}", response_model=Requirement)
 async def update_requirement(requirement_id: str, update_data: RequirementUpdate):
     """API endpoint that delegates to the shared update service helper."""
