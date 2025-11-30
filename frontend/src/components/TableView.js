@@ -1080,20 +1080,12 @@ const TableView = ({ activeProject, activeGroup, groups }) => {
               data-testid="search-input"
             />
           </div>
-          {/* Simple Status filter to support batch update use cases */}
+          {/* Status filter */}
           <div className="flex items-center space-x-2">
             <Label className="text-xs text-slate-500">Status</Label>
             <Select
-              onValueChange={(value) => {
-                // Inline filter: delegate to search + status combination by updating searchQuery and letting backend keep full list
-                // For now, we just append status text to the search to keep behavior simple.
-                if (value === 'ALL') {
-                  setSearchQuery('');
-                } else {
-                  setSearchQuery(value);
-                }
-              }}
-              defaultValue="ALL"
+              onValueChange={(value) => setStatusFilter(value)}
+              value={statusFilter}
             >
               <SelectTrigger className="h-9 w-32 text-xs">
                 <SelectValue placeholder="All" />
