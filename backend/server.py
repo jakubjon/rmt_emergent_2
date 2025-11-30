@@ -479,6 +479,24 @@ async def create_relationship(relationship: RequirementRelationship):
     if parent_result.modified_count == 0 or child_result.modified_count == 0:
         raise HTTPException(status_code=404, detail="One or both requirements not found")
     
+    # Get requirement details for logging
+    parent_req = await db.requirements.find_one({"id": relationship.parent_id})
+    child_req = await db.requirements.find_one({"id": relationship.child_id})
+    
+    if parent_req and child_req:
+        # Log relationship creation for both requirements
+        await create_change_log_entry(
+            requirement_id=relationship.parent_id,
+            change_type="relationship_added",
+            change_description=f"Child relationship added: {parent_req['req_id']} → {child_req['req_id']}"
+        )
+        
+        await create_change_log_entry(
+            requirement_id=relationship.child_id,
+            change_type="relationship_added", 
+            change_description=f"Parent relationship added: {parent_req['req_id']} → {child_req['req_id']}"
+        )
+    
     return {"message": "Relationship created"}
 
 @api_router.delete("/requirements/relationships/{parent_id}/{child_id}")
