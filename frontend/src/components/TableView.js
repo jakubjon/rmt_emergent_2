@@ -973,6 +973,81 @@ const TableView = ({ activeProject, activeGroup, groups }) => {
         </div>
       </div>
 
+      {/* Batch Actions Bar */}
+      {selectedIds.length > 0 && (
+        <div className="flex items-center justify-between mb-3 p-3 bg-blue-50 border border-blue-100 rounded-lg">
+          <div className="text-sm text-blue-900">
+            <span className="font-medium">{selectedIds.length}</span> requirement(s) selected
+          </div>
+          <div className="flex items-center space-x-2">
+            <Select
+              onValueChange={async (value) => {
+                if (value === 'NO_CHANGE') return;
+                try {
+                  const payload = {
+                    requirement_ids: selectedIds,
+                    update: { status: value },
+                  };
+                  await axios.put(`${API}/requirements/batch`, payload);
+                  // Refresh list
+                  if (activeProject?.id) {
+                    await loadRequirements({ projectId: activeProject.id, groupId: activeGroup?.id });
+                  }
+                  toast.success(`Status updated for ${selectedIds.length} requirement(s)`);
+                } catch (err) {
+                  console.error('Batch update failed', err);
+                  toast.error('Failed to batch update requirements');
+                }
+              }}
+            >
+              <SelectTrigger className="h-9 w-44 text-xs">
+                <SelectValue placeholder="Batch set status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="NO_CHANGE">Batch set status</SelectItem>
+                <SelectItem value="Draft">Draft</SelectItem>
+                <SelectItem value="In Review">In Review</SelectItem>
+                <SelectItem value="Accepted">Accepted</SelectItem>
+                <SelectItem value="Implemented">Implemented</SelectItem>
+                <SelectItem value="Tested">Tested</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-red-600 border-red-200 hover:bg-red-50"
+              onClick={async () => {
+                if (!confirm(`Delete ${selectedIds.length} selected requirement(s)? This cannot be undone.`)) {
+                  return;
+                }
+                try {
+                  for (const id of selectedIds) {
+                    const req = requirements.find((r) => r.id === id);
+                    if (req) {
+                      await deleteRequirement(req.id);
+                    }
+                  }
+                  setSelectedIds([]);
+                  toast.success('Selected requirements deleted');
+                } catch (err) {
+                  console.error('Batch delete failed', err);
+                  toast.error('Failed to delete some requirements');
+                }
+              }}
+            >
+              Delete Selected
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setSelectedIds([])}
+            >
+              Clear Selection
+            </Button>
+          </div>
+        </div>
+      )}
+
       {/* Search and Filter Bar */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-4 flex-1 max-w-xl">
