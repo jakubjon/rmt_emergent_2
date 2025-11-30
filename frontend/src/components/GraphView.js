@@ -99,6 +99,9 @@ const GraphView = ({ activeProject, activeGroup, groups }) => {
   const [loading, setLoading] = useState(false);
   const [selectedGroups, setSelectedGroups] = useState([]);
   const [showMinimap, setShowMinimap] = useState(true);
+  const [isCtrlPressed, setIsCtrlPressed] = useState(false);
+  const [firstSelectedNode, setFirstSelectedNode] = useState(null);
+  const [secondSelectedNode, setSecondSelectedNode] = useState(null);
 
   useEffect(() => {
     if (activeProject?.id) {
