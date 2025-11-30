@@ -21,7 +21,7 @@ import ReactMarkdown from 'react-markdown';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-const DocumentView = ({ activeProject, activeGroup }) => {
+const DocumentView = ({ activeProject, activeGroup, groups }) => {
   const [requirements, setRequirements] = useState([]);
   const [chapters, setChapters] = useState([]);
   const [loading, setLoading] = useState(false);
