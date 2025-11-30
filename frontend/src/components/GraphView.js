@@ -527,10 +527,18 @@ const GraphView = ({ activeProject, activeGroup, groups }) => {
             <Background color="#e2e8f0" gap={16} />
             
             <Panel position="top-right" className="bg-white p-3 shadow-lg rounded-lg border border-slate-200">
-              <div className="text-xs text-slate-600">
-                <div>Hold Ctrl + Click to create relationships</div>
-                <div>Select arrow + Delete to remove relationships</div>
+              <div className="text-xs text-slate-600 space-y-1">
+                <div className="flex items-center space-x-2">
+                  <div className={`w-2 h-2 rounded-full ${isCtrlPressed ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+                  <span>Hold Ctrl + Click to create relationships</span>
+                </div>
+                <div>Click arrow + Confirm to remove relationships</div>
                 <div>Drag nodes to reposition</div>
+                {firstSelectedNode && (
+                  <div className="text-blue-600 font-medium">
+                    Selected: {firstSelectedNode.data.req_id} → Select child
+                  </div>
+                )}
               </div>
             </Panel>
           </ReactFlow>
