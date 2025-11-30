@@ -151,31 +151,59 @@ const TableView = ({ activeProject, activeGroup, groups }) => {
   };
 
   const handleViewRequirement = async (requirement) => {
-    setSelectedRequirement(requirement);
-    
-    // Fetch parent and child details
     try {
-      const allReqs = await Promise.all([
-        ...requirement.parent_ids.map(id => 
-          axios.get(`${API}/requirements/${id}`).catch(() => null)
-        ),
-        ...requirement.child_ids.map(id => 
-          axios.get(`${API}/requirements/${id}`).catch(() => null)
-        )
-      ]);
+      setSelectedRequirement(requirement);
+      setShowViewDialog(true);
       
-      const parentDetails = allReqs.slice(0, requirement.parent_ids.length)
-        .filter(Boolean).map(res => res.data);
-      const childDetails = allReqs.slice(requirement.parent_ids.length)
-        .filter(Boolean).map(res => res.data);
+      // Fetch parent and child details if they exist
+      const parentIds = requirement.parent_ids || [];
+      const childIds = requirement.child_ids || [];
+      
+      if (parentIds.length === 0 && childIds.length === 0) {
+        setParentRequirements([]);
+        setChildRequirements([]);
+        return;
+      }
+      
+      const allRequests = [];
+      
+      // Fetch parent requirements
+      parentIds.forEach(id => {
+        allRequests.push(
+          axios.get(`${API}/requirements/${id}`)
+            .then(res => ({ type: 'parent', data: res.data }))
+            .catch(err => ({ type: 'parent', error: err, id }))
+        );
+      });
+      
+      // Fetch child requirements  
+      childIds.forEach(id => {
+        allRequests.push(
+          axios.get(`${API}/requirements/${id}`)
+            .then(res => ({ type: 'child', data: res.data }))
+            .catch(err => ({ type: 'child', error: err, id }))
+        );
+      });
+      
+      const results = await Promise.all(allRequests);
+      
+      const parentDetails = results
+        .filter(r => r.type === 'parent' && r.data)
+        .map(r => r.data);
+      
+      const childDetails = results
+        .filter(r => r.type === 'child' && r.data)
+        .map(r => r.data);
       
       setParentRequirements(parentDetails);
       setChildRequirements(childDetails);
+      
     } catch (error) {
-      console.error('Error fetching related requirements:', error);
+      console.error('Error in handleViewRequirement:', error);
+      toast.error('Failed to load requirement details');
+      setParentRequirements([]);
+      setChildRequirements([]);
     }
-    
-    setShowViewDialog(true);
   };
 
   const handleEditRequirement = (requirement) => {
