@@ -786,16 +786,46 @@ const TableView = ({ activeProject, activeGroup, groups }) => {
       </div>
 
       {/* Search and Filter Bar */}
-      <div className="flex items-center space-x-4 mb-6">
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-          <Input
-            placeholder="Search requirements..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
-            data-testid="search-input"
-          />
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center space-x-4 flex-1 max-w-xl">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Input
+              placeholder="Search requirements..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10"
+              data-testid="search-input"
+            />
+          </div>
+          {/* Simple Status filter to support batch update use cases */}
+          <div className="flex items-center space-x-2">
+            <Label className="text-xs text-slate-500">Status</Label>
+            <Select
+              onValueChange={(value) => {
+                // Inline filter: delegate to search + status combination by updating searchQuery and letting backend keep full list
+                // For now, we just append status text to the search to keep behavior simple.
+                if (value === 'ALL') {
+                  setSearchQuery('');
+                } else {
+                  setSearchQuery(value);
+                }
+              }}
+              defaultValue="ALL"
+            >
+              <SelectTrigger className="h-9 w-32 text-xs">
+                <SelectValue placeholder="All" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ALL">All</SelectItem>
+                <SelectItem value="Draft">Draft</SelectItem>
+                <SelectItem value="In Review">In Review</SelectItem>
+                <SelectItem value="Accepted">Accepted</SelectItem>
+                <SelectItem value="Implemented">Implemented</SelectItem>
+                <SelectItem value="Tested">Tested</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
         <Button variant="outline" size="sm">
           <Filter className="h-4 w-4 mr-2" />
