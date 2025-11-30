@@ -118,6 +118,170 @@ const TableView = ({ activeProject, activeGroup, groups }) => {
         title: '',
         text: '',
         status: 'Draft',
+  const handleExport = () => {
+    if (!requirements || requirements.length === 0) {
+      toast.error('No requirements to export');
+      return;
+    }
+
+    const headers = [
+      'req_id',
+      'title',
+      'text',
+      'status',
+      'verification_methods',
+      'project_id',
+      'group_id',
+      'chapter_id',
+      'parent_ids',
+      'child_ids',
+    ];
+
+    const escapeCsv = (value) => {
+      if (value === null || value === undefined) return '';
+      const str = String(value);
+      if (str.includes('"') || str.includes(',') || str.includes('\n')) {
+        return '"' + str.replace(/"/g, '""') + '"';
+      }
+      return str;
+    };
+
+    const rows = requirements.map((req) => {
+      const verification = (req.verification_methods || []).join('|');
+      const parents = (req.parent_ids || []).join('|');
+      const children = (req.child_ids || []).join('|');
+
+      const values = [
+        req.req_id || '',
+        req.title || '',
+        req.text || '',
+        req.status || '',
+        verification,
+        req.project_id || '',
+        req.group_id || '',
+        req.chapter_id || '',
+        parents,
+        children,
+      ];
+
+      return values.map(escapeCsv).join(',');
+    });
+
+    const csvContent = [headers.join(','), ...rows].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    link.download = `requirements-${timestamp}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleImport = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!activeProject?.id) {
+      toast.error('No active project selected for import');
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = async (e) => {
+      try {
+        const text = e.target?.result;
+        if (typeof text !== 'string') {
+          toast.error('Failed to read CSV file');
+          return;
+        }
+
+        const lines = text.split(/\r?\n/).filter((line) => line.trim().length > 0);
+        if (lines.length < 2) {
+          toast.error('CSV file appears to be empty');
+          return;
+        }
+
+        const [headerLine, ...dataLines] = lines;
+        const headers = headerLine.split(',').map((h) => h.trim());
+
+        const getIndex = (name) => headers.indexOf(name);
+        const idxTitle = getIndex('title');
+        const idxText = getIndex('text');
+        const idxStatus = getIndex('status');
+        const idxVerification = getIndex('verification_methods');
+        const idxGroup = getIndex('group_id');
+        const idxChapter = getIndex('chapter_id');
+
+        if (idxTitle === -1) {
+          toast.error('CSV must contain at least a "title" column');
+          return;
+        }
+
+        let successCount = 0;
+        let failCount = 0;
+
+        for (const line of dataLines) {
+          if (!line.trim()) continue;
+          const cols = line.split(',');
+          const title = (cols[idxTitle] || '').replace(/^"|"$/g, '').trim();
+          if (!title) {
+            failCount++;
+            continue;
+          }
+
+          const textValue = idxText !== -1 ? (cols[idxText] || '').replace(/^"|"$/g, '') : '';
+          const statusValue = idxStatus !== -1 ? (cols[idxStatus] || 'Draft').replace(/^"|"$/g, '') : 'Draft';
+          const verificationRaw = idxVerification !== -1 ? (cols[idxVerification] || '').replace(/^"|"$/g, '') : '';
+          const groupIdValue =
+            idxGroup !== -1 && cols[idxGroup]
+              ? cols[idxGroup].replace(/^"|"$/g, '')
+              : activeGroup?.id || groups[0]?.id;
+          const chapterIdValue =
+            idxChapter !== -1 && cols[idxChapter]
+              ? cols[idxChapter].replace(/^"|"$/g, '')
+              : undefined;
+
+          if (!groupIdValue) {
+            failCount++;
+            continue;
+          }
+
+          const verificationMethods = verificationRaw
+            ? verificationRaw.split('|').map((v) => v.trim()).filter(Boolean)
+            : [];
+
+          const payload = {
+            title,
+            text: textValue,
+            status: statusValue || 'Draft',
+            verification_methods: verificationMethods,
+            project_id: activeProject.id,
+            group_id: groupIdValue,
+            chapter_id: chapterIdValue || undefined,
+            parent_ids: [],
+          };
+
+          try {
+            await createRequirement(payload);
+            successCount++;
+          } catch (err) {
+            console.error('Error importing requirement row:', err);
+            failCount++;
+          }
+        }
+
+        toast.success(`Import finished: ${successCount} created, ${failCount} failed`);
+      } catch (err) {
+        console.error('Error processing import:', err);
+        toast.error('Failed to import CSV file');
+      }
+    };
+
+    reader.readAsText(file);
+  };
+
         verification_methods: [],
         group_id: '',
         chapter_id: ''
@@ -315,11 +479,34 @@ const TableView = ({ activeProject, activeGroup, groups }) => {
           </div>
         </div>
         <div className="flex items-center space-x-3">
-          <Button variant="outline" size="sm" data-testid="import-button">
+          <input
+            type="file"
+            accept=".csv"
+            id="requirements-import-input"
+            className="hidden"
+            onChange={handleImport}
+          />
+          <Button
+            variant="outline"
+            size="sm"
+            data-testid="import-button"
+            onClick={() => {
+              const input = document.getElementById('requirements-import-input');
+              if (input) {
+                input.value = '';
+                input.click();
+              }
+            }}
+          >
             <Upload className="h-4 w-4 mr-2" />
             Import
           </Button>
-          <Button variant="outline" size="sm" data-testid="export-button">
+          <Button
+            variant="outline"
+            size="sm"
+            data-testid="export-button"
+            onClick={handleExport}
+          >
             <Download className="h-4 w-4 mr-2" />
             Export
           </Button>
