@@ -634,6 +634,16 @@ async def search_requirements(q: str, project_id: Optional[str] = None):
     requirements = await db.requirements.find(query).to_list(100)
     return [Requirement(**parse_from_mongo(req)) for req in requirements]
 
+# Change log endpoint
+@api_router.get("/requirements/{requirement_id}/changelog", response_model=List[RequirementChangeLog])
+async def get_requirement_changelog(requirement_id: str):
+    """Get the complete change history for a specific requirement"""
+    change_logs = await db.requirement_change_logs.find(
+        {"requirement_id": requirement_id}
+    ).sort("created_at", -1).to_list(1000)  # Sort by newest first
+    
+    return [RequirementChangeLog(**parse_from_mongo(log)) for log in change_logs]
+
 # Include the router in the main app
 app.include_router(api_router)
 
