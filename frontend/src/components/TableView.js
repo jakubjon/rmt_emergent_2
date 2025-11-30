@@ -44,6 +44,8 @@ const TableView = ({ activeProject, activeGroup, groups }) => {
     setRequirements,
   } = useRequirements();
   const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('ALL');
+  const [verificationFilter, setVerificationFilter] = useState('ALL');
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showViewDialog, setShowViewDialog] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
