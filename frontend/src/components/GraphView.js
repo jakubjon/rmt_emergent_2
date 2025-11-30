@@ -269,42 +269,56 @@ const GraphView = ({ activeProject, activeGroup, groups }) => {
       groupXOffset += groupWidth + 50; // Spacing between groups
     });
 
-    // Create edges from parent-child relationships - FIXED VERSION
+    // Create edges from parent-child relationships - DEBUGGING VERSION
     const newEdges = [];
+    
+    console.log('=== DEBUG EDGE CREATION ===');
+    console.log('Filtered requirements:', filteredRequirements.map(r => ({
+      id: r.id,
+      req_id: r.req_id,
+      child_ids: r.child_ids,
+      parent_ids: r.parent_ids
+    })));
+    
     filteredRequirements.forEach(req => {
       const childIds = req.child_ids || [];
+      console.log(`Processing ${req.req_id} (${req.id}) - children:`, childIds);
+      
       if (childIds.length > 0) {
         childIds.forEach(childId => {
-          // Only create edge if both parent and child are in filtered requirements
-          const childVisible = filteredRequirements.some(r => r.id === childId);
+          const childRequirement = filteredRequirements.find(r => r.id === childId);
+          console.log(`  Checking child ${childId} - found:`, childRequirement?.req_id);
           
-          if (childVisible) {
+          if (childRequirement) {
             const edge = {
               id: `edge-${req.id}-${childId}`,
               source: req.id,
               target: childId,
-              type: 'default',
-              animated: false,
+              type: 'smoothstep',
+              animated: true,
               style: { 
-                stroke: '#10b981', 
-                strokeWidth: 2 
+                stroke: '#ef4444', 
+                strokeWidth: 4 
               },
               markerEnd: {
                 type: 'arrowclosed',
-                color: '#10b981',
+                color: '#ef4444',
                 width: 20,
                 height: 20
               },
-              label: '',
+              label: `${req.req_id} → ${childRequirement.req_id}`,
             };
             newEdges.push(edge);
-            // Edge created successfully
+            console.log(`  ✅ Created edge:`, edge.id, edge.label);
+          } else {
+            console.log(`  ❌ Child ${childId} not found in filtered requirements`);
           }
         });
       }
     });
 
-    // Graph generation complete
+    console.log('Final edges array:', newEdges);
+    console.log('=== END DEBUG ===');
 
     setNodes(newNodes);
     setEdges(newEdges);
