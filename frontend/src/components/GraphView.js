@@ -170,7 +170,7 @@ const GraphView = ({ activeProject, activeGroup, groups }) => {
       return selectedGroups.includes(req.group_id);
     });
 
-    // Create nodes
+    // Create nodes with selection highlighting
     const newNodes = filteredRequirements.map((req, index) => ({
       id: req.id,
       type: 'requirement',
@@ -182,6 +182,11 @@ const GraphView = ({ activeProject, activeGroup, groups }) => {
         ...req,
         label: req.title,
       },
+      selected: firstSelectedNode?.id === req.id,
+      style: {
+        border: firstSelectedNode?.id === req.id ? '3px solid #3b82f6' : undefined,
+        boxShadow: firstSelectedNode?.id === req.id ? '0 0 10px rgba(59, 130, 246, 0.5)' : undefined,
+      }
     }));
 
     // Create edges from parent-child relationships
