@@ -159,6 +159,29 @@ def parse_from_mongo(item: dict) -> dict:
                 pass
     return item
 
+async def create_change_log_entry(
+    requirement_id: str,
+    change_type: str,
+    change_description: str,
+    field_name: Optional[str] = None,
+    old_value: Optional[str] = None,
+    new_value: Optional[str] = None,
+    changed_by: Optional[str] = None
+):
+    """Create a change log entry for requirement tracking"""
+    change_log = RequirementChangeLog(
+        requirement_id=requirement_id,
+        change_type=change_type,
+        field_name=field_name,
+        old_value=old_value,
+        new_value=new_value,
+        change_description=change_description,
+        changed_by=changed_by or "System"
+    )
+    
+    change_log_dict = prepare_for_mongo(change_log.dict())
+    await db.requirement_change_logs.insert_one(change_log_dict)
+
 # Project endpoints
 @api_router.post("/projects", response_model=Project)
 async def create_project(project: ProjectCreate):
