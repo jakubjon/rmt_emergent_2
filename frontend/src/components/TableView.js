@@ -98,6 +98,64 @@ const TableView = ({ activeProject, activeGroup, groups }) => {
     return true;
   });
 
+  // Column configuration for future resizing/reordering
+  const [columnOrder, setColumnOrder] = useState([
+    'select',
+    'id',
+    'title',
+    'status',
+    'verification',
+    'parents',
+    'children',
+    'actions',
+  ]);
+
+  const [columnWidths, setColumnWidths] = useState({
+    select: 40,
+    id: 120,
+    title: 320,
+    status: 120,
+    verification: 160,
+    parents: 100,
+    children: 100,
+    actions: 160,
+  });
+
+  const startResize = (colKey, e) => {
+    e.preventDefault();
+    const startX = e.clientX;
+    const startWidth = columnWidths[colKey] || 120;
+
+    const onMouseMove = (moveEvent) => {
+      const delta = moveEvent.clientX - startX;
+      setColumnWidths((prev) => ({
+        ...prev,
+        [colKey]: Math.max(60, startWidth + delta),
+      }));
+    };
+
+    const onMouseUp = () => {
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+    };
+
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+  };
+
+  const moveColumn = (colKey, direction) => {
+    setColumnOrder((prev) => {
+      const idx = prev.indexOf(colKey);
+      if (idx === -1) return prev;
+      const newIdx = idx + direction;
+      if (newIdx < 0 || newIdx >= prev.length) return prev;
+      const copy = [...prev];
+      const [removed] = copy.splice(idx, 1);
+      copy.splice(newIdx, 0, removed);
+      return copy;
+    });
+  };
+
   const allVisibleSelected =
     filteredRequirements.length > 0 &&
     filteredRequirements.every((req) => selectedIds.includes(req.id));
