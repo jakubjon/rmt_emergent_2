@@ -472,7 +472,10 @@ const TableView = ({ activeProject, activeGroup, groups }) => {
                         <div className="mt-1 flex items-center space-x-2">
                           <Clock className="h-4 w-4 text-slate-400" />
                           <span className="text-sm text-slate-700">
-                            {new Date(selectedRequirement.created_at).toLocaleDateString()}
+                            {selectedRequirement.created_at ? 
+                              new Date(selectedRequirement.created_at).toLocaleDateString() : 
+                              'Unknown'
+                            }
                           </span>
                         </div>
                       </div>
