@@ -118,6 +118,24 @@ const TableView = ({ activeProject, activeGroup, groups }) => {
         title: '',
         text: '',
         status: 'Draft',
+        verification_methods: [],
+        group_id: '',
+        chapter_id: ''
+      });
+      
+      setShowCreateDialog(false);
+      toast.success('Requirement created successfully!');
+    } catch (error) {
+      console.error('Error creating requirement:', error);
+      toast.error('Failed to create requirement');
+    }
+  };
+
+  const handleExport = () => {
+    if (!requirements || requirements.length === 0) {
+      toast.error('No requirements to export');
+      return;
+    }
   const handleExport = () => {
     if (!requirements || requirements.length === 0) {
       toast.error('No requirements to export');
