@@ -368,6 +368,9 @@ async def get_requirements(
 
 @api_router.get("/requirements/{requirement_id}", response_model=Requirement)
 async def get_requirement(requirement_id: str):
+    """API endpoint that uses the shared service helper"""
+    return await get_requirement_by_id(requirement_id)
+
 
 async def get_requirement_by_id(requirement_id: str) -> Requirement:
     """Service helper to fetch a requirement or raise 404"""
