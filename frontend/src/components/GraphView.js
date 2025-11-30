@@ -258,21 +258,24 @@ const GraphView = ({ activeProject, activeGroup, groups }) => {
         const childRequirement = filteredRequirements.find(r => r.id === childId);
         
         if (childRequirement) {
+          const edgeId = `edge-${req.id}-${childId}`;
+          const isSelected = selectedEdge?.id === edgeId;
+          
           const edge = {
-            id: `edge-${req.id}-${childId}`,
+            id: edgeId,
             source: req.id,
             target: childId,
             sourceHandle: 'source',
             targetHandle: 'target',
             type: 'smoothstep',
-            animated: false,
+            animated: isSelected,
             style: { 
-              stroke: '#10b981', 
-              strokeWidth: 3 
+              stroke: isSelected ? '#ef4444' : '#10b981', 
+              strokeWidth: isSelected ? 4 : 3 
             },
             markerEnd: {
               type: 'arrowclosed',
-              color: '#10b981',
+              color: isSelected ? '#ef4444' : '#10b981',
             },
           };
           newEdges.push(edge);
