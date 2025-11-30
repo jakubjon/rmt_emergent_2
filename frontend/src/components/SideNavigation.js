@@ -164,7 +164,7 @@ const SideNavigation = ({
         <Separator className="my-6" />
 
         {/* Project Section */}
-        <SectionHeader section="project" title="Project">
+        <SectionHeader section="project" title="Project" expandedSections={expandedSections} toggleSection={toggleSection}>
           <div className="space-y-3 ml-2">
             {activeProject && (
               <div className="p-3 bg-blue-50 rounded-lg border-l-4 border-blue-500">
