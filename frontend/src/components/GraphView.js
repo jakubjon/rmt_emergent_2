@@ -246,56 +246,38 @@ const GraphView = ({ activeProject, activeGroup, groups }) => {
       }
     }));
 
-    // Create edges from parent-child relationships - DEBUGGING VERSION
+    // Create edges from parent-child relationships - FIXED WITH HANDLES
     const newEdges = [];
-    
-    console.log('=== DEBUG EDGE CREATION ===');
-    console.log('Filtered requirements:', filteredRequirements.map(r => ({
-      id: r.id,
-      req_id: r.req_id,
-      child_ids: r.child_ids,
-      parent_ids: r.parent_ids
-    })));
     
     filteredRequirements.forEach(req => {
       const childIds = req.child_ids || [];
-      console.log(`Processing ${req.req_id} (${req.id}) - children:`, childIds);
       
-      if (childIds.length > 0) {
-        childIds.forEach(childId => {
-          const childRequirement = filteredRequirements.find(r => r.id === childId);
-          console.log(`  Checking child ${childId} - found:`, childRequirement?.req_id);
-          
-          if (childRequirement) {
-            const edge = {
-              id: `edge-${req.id}-${childId}`,
-              source: req.id,
-              target: childId,
-              type: 'smoothstep',
-              animated: true,
-              style: { 
-                stroke: '#ef4444', 
-                strokeWidth: 4 
-              },
-              markerEnd: {
-                type: 'arrowclosed',
-                color: '#ef4444',
-                width: 20,
-                height: 20
-              },
-              label: `${req.req_id} → ${childRequirement.req_id}`,
-            };
-            newEdges.push(edge);
-            console.log(`  ✅ Created edge:`, edge.id, edge.label);
-          } else {
-            console.log(`  ❌ Child ${childId} not found in filtered requirements`);
-          }
-        });
-      }
+      childIds.forEach(childId => {
+        const childRequirement = filteredRequirements.find(r => r.id === childId);
+        
+        if (childRequirement) {
+          const edge = {
+            id: `edge-${req.id}-${childId}`,
+            source: req.id,
+            target: childId,
+            sourceHandle: 'source',
+            targetHandle: 'target',
+            type: 'smoothstep',
+            animated: true,
+            style: { 
+              stroke: '#10b981', 
+              strokeWidth: 3 
+            },
+            markerEnd: {
+              type: 'arrowclosed',
+              color: '#10b981',
+            },
+            label: `${req.req_id} → ${childRequirement.req_id}`,
+          };
+          newEdges.push(edge);
+        }
+      });
     });
-
-    console.log('Final edges array:', newEdges);
-    console.log('=== END DEBUG ===');
 
     console.log('Setting nodes:', newNodes.length);
     console.log('Setting edges:', newEdges.length);
