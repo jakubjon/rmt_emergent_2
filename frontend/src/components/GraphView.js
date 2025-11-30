@@ -320,6 +320,9 @@ const GraphView = ({ activeProject, activeGroup, groups }) => {
     console.log('Final edges array:', newEdges);
     console.log('=== END DEBUG ===');
 
+    console.log('Setting nodes:', newNodes.length);
+    console.log('Setting edges:', newEdges.length);
+    
     setNodes(newNodes);
     setEdges(newEdges);
   };
