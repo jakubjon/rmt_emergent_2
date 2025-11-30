@@ -47,9 +47,6 @@ const TableView = ({ activeProject, activeGroup, groups }) => {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showViewDialog, setShowViewDialog] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
-  const allVisibleSelected =
-    filteredRequirements.length > 0 &&
-    filteredRequirements.every((req) => selectedIds.includes(req.id));
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [selectedRequirement, setSelectedRequirement] = useState(null);
   const [editRequirement, setEditRequirement] = useState(null);
@@ -81,6 +78,10 @@ const TableView = ({ activeProject, activeGroup, groups }) => {
       req.text.toLowerCase().includes(query)
     );
   });
+
+  const allVisibleSelected =
+    filteredRequirements.length > 0 &&
+    filteredRequirements.every((req) => selectedIds.includes(req.id));
 
   // Legacy fetchRequirements kept for reference; data loading now handled via useRequirements.loadRequirements
 
