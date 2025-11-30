@@ -397,6 +397,321 @@ const TableView = ({ activeProject, activeGroup, groups }) => {
               </div>
             </DialogContent>
           </Dialog>
+
+          {/* View Requirement Dialog */}
+          <Dialog open={showViewDialog} onOpenChange={setShowViewDialog}>
+            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle className="flex items-center space-x-3">
+                  <Badge variant="outline" className="font-mono">
+                    {selectedRequirement?.req_id}
+                  </Badge>
+                  <span>{selectedRequirement?.title}</span>
+                </DialogTitle>
+              </DialogHeader>
+              
+              {selectedRequirement && (
+                <Tabs defaultValue="details" className="w-full">
+                  <TabsList className="grid w-full grid-cols-4">
+                    <TabsTrigger value="details">Details</TabsTrigger>
+                    <TabsTrigger value="relationships">Relationships</TabsTrigger>
+                    <TabsTrigger value="history">Change Log</TabsTrigger>
+                    <TabsTrigger value="verification">Verification</TabsTrigger>
+                  </TabsList>
+                  
+                  <TabsContent value="details" className="space-y-4">
+                    <div>
+                      <Label className="text-sm font-medium text-slate-600">Status</Label>
+                      <div className="mt-1">
+                        <Badge className={getStatusBadgeClass(selectedRequirement.status)}>
+                          {selectedRequirement.status}
+                        </Badge>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <Label className="text-sm font-medium text-slate-600">Description</Label>
+                      <div className="mt-2 p-4 bg-slate-50 rounded-lg">
+                        <ReactMarkdown className="prose prose-sm max-w-none">
+                          {selectedRequirement.text}
+                        </ReactMarkdown>
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label className="text-sm font-medium text-slate-600">Created</Label>
+                        <div className="mt-1 flex items-center space-x-2">
+                          <Clock className="h-4 w-4 text-slate-400" />
+                          <span className="text-sm text-slate-700">
+                            {new Date(selectedRequirement.created_at).toLocaleDateString()}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <Label className="text-sm font-medium text-slate-600">Last Updated</Label>
+                        <div className="mt-1 flex items-center space-x-2">
+                          <Clock className="h-4 w-4 text-slate-400" />
+                          <span className="text-sm text-slate-700">
+                            {new Date(selectedRequirement.updated_at).toLocaleDateString()}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </TabsContent>
+                  
+                  <TabsContent value="relationships" className="space-y-4">
+                    <div className="grid grid-cols-2 gap-6">
+                      <div>
+                        <div className="flex items-center space-x-2 mb-3">
+                          <Link className="h-4 w-4 text-blue-600" />
+                          <Label className="font-medium">Parent Requirements</Label>
+                          <Badge variant="secondary">{parentRequirements.length}</Badge>
+                        </div>
+                        
+                        {parentRequirements.length === 0 ? (
+                          <p className="text-sm text-slate-500 italic">No parent requirements</p>
+                        ) : (
+                          <div className="space-y-2">
+                            {parentRequirements.map(parent => (
+                              <Card key={parent.id} className="p-3 hover:bg-slate-50">
+                                <div className="flex items-center justify-between">
+                                  <div>
+                                    <Badge variant="outline" className="text-xs mb-1">
+                                      {parent.req_id}
+                                    </Badge>
+                                    <p className="font-medium text-sm">{parent.title}</p>
+                                    <p className="text-xs text-slate-500 line-clamp-1">
+                                      {parent.text}
+                                    </p>
+                                  </div>
+                                  <Badge className={getStatusBadgeClass(parent.status)}>
+                                    {parent.status}
+                                  </Badge>
+                                </div>
+                              </Card>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      
+                      <div>
+                        <div className="flex items-center space-x-2 mb-3">
+                          <Link className="h-4 w-4 text-green-600" />
+                          <Label className="font-medium">Child Requirements</Label>
+                          <Badge variant="secondary">{childRequirements.length}</Badge>
+                        </div>
+                        
+                        {childRequirements.length === 0 ? (
+                          <p className="text-sm text-slate-500 italic">No child requirements</p>
+                        ) : (
+                          <div className="space-y-2">
+                            {childRequirements.map(child => (
+                              <Card key={child.id} className="p-3 hover:bg-slate-50">
+                                <div className="flex items-center justify-between">
+                                  <div>
+                                    <Badge variant="outline" className="text-xs mb-1">
+                                      {child.req_id}
+                                    </Badge>
+                                    <p className="font-medium text-sm">{child.title}</p>
+                                    <p className="text-xs text-slate-500 line-clamp-1">
+                                      {child.text}
+                                    </p>
+                                  </div>
+                                  <Badge className={getStatusBadgeClass(child.status)}>
+                                    {child.status}
+                                  </Badge>
+                                </div>
+                              </Card>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </TabsContent>
+                  
+                  <TabsContent value="history" className="space-y-4">
+                    <Card className="p-4">
+                      <div className="flex items-center space-x-2 mb-3">
+                        <Users className="h-4 w-4 text-slate-600" />
+                        <Label className="font-medium">Change History</Label>
+                      </div>
+                      
+                      <div className="space-y-3">
+                        <div className="flex items-start space-x-3 p-3 bg-slate-50 rounded-lg">
+                          <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between">
+                              <p className="font-medium text-sm">Requirement Created</p>
+                              <span className="text-xs text-slate-500">
+                                {new Date(selectedRequirement.created_at).toLocaleString()}
+                              </span>
+                            </div>
+                            <p className="text-xs text-slate-600 mt-1">
+                              Initial requirement created with status: {selectedRequirement.status}
+                            </p>
+                          </div>
+                        </div>
+                        
+                        {selectedRequirement.updated_at !== selectedRequirement.created_at && (
+                          <div className="flex items-start space-x-3 p-3 bg-blue-50 rounded-lg">
+                            <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                            <div className="flex-1">
+                              <div className="flex items-center justify-between">
+                                <p className="font-medium text-sm">Requirement Updated</p>
+                                <span className="text-xs text-slate-500">
+                                  {new Date(selectedRequirement.updated_at).toLocaleString()}
+                                </span>
+                              </div>
+                              <p className="text-xs text-slate-600 mt-1">
+                                Requirement details were modified
+                              </p>
+                            </div>
+                          </div>
+                        )}
+                        
+                        <p className="text-xs text-slate-500 italic mt-4">
+                          * Detailed change tracking will be implemented in future versions
+                        </p>
+                      </div>
+                    </Card>
+                  </TabsContent>
+                  
+                  <TabsContent value="verification" className="space-y-4">
+                    <div>
+                      <Label className="font-medium mb-3 block">Verification Methods</Label>
+                      
+                      {selectedRequirement.verification_methods?.length === 0 ? (
+                        <p className="text-sm text-slate-500 italic">No verification methods assigned</p>
+                      ) : (
+                        <div className="grid grid-cols-2 gap-4">
+                          {['Analysis', 'Review', 'Inspection', 'Test'].map(method => (
+                            <Card 
+                              key={method} 
+                              className={`p-4 ${
+                                selectedRequirement.verification_methods?.includes(method) 
+                                  ? 'bg-green-50 border-green-200' 
+                                  : 'bg-slate-50 border-slate-200'
+                              }`}
+                            >
+                              <div className="flex items-center space-x-2">
+                                <div 
+                                  className={`w-3 h-3 rounded-full ${
+                                    selectedRequirement.verification_methods?.includes(method)
+                                      ? 'bg-green-500' 
+                                      : 'bg-slate-300'
+                                  }`}
+                                />
+                                <span className="font-medium text-sm">{method}</span>
+                              </div>
+                              <p className="text-xs text-slate-600 mt-2">
+                                {selectedRequirement.verification_methods?.includes(method)
+                                  ? 'Applied to this requirement'
+                                  : 'Not applied'
+                                }
+                              </p>
+                            </Card>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </TabsContent>
+                </Tabs>
+              )}
+              
+              <div className="flex justify-end pt-4">
+                <Button onClick={() => setShowViewDialog(false)}>
+                  Close
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          {/* Edit Requirement Dialog */}
+          <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Edit Requirement - {editRequirement?.req_id}</DialogTitle>
+              </DialogHeader>
+              
+              {editRequirement && (
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="edit-title">Title *</Label>
+                    <Input
+                      id="edit-title"
+                      value={editRequirement.title}
+                      onChange={(e) => setEditRequirement(prev => ({...prev, title: e.target.value}))}
+                      data-testid="edit-requirement-title-input"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="edit-text">Description *</Label>
+                    <Textarea
+                      id="edit-text"
+                      value={editRequirement.text}
+                      onChange={(e) => setEditRequirement(prev => ({...prev, text: e.target.value}))}
+                      rows={4}
+                      data-testid="edit-requirement-text-input"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="edit-status">Status</Label>
+                    <Select 
+                      value={editRequirement.status} 
+                      onValueChange={(value) => setEditRequirement(prev => ({...prev, status: value}))}
+                    >
+                      <SelectTrigger data-testid="edit-requirement-status-select">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Draft">Draft</SelectItem>
+                        <SelectItem value="In Review">In Review</SelectItem>
+                        <SelectItem value="Accepted">Accepted</SelectItem>
+                        <SelectItem value="Implemented">Implemented</SelectItem>
+                        <SelectItem value="Tested">Tested</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label>Verification Methods</Label>
+                    <div className="flex flex-wrap gap-4 mt-2">
+                      {['Analysis', 'Review', 'Inspection', 'Test'].map(method => (
+                        <label key={method} className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            checked={editRequirement.verification_methods.includes(method)}
+                            onChange={(e) => handleEditVerificationMethodChange(method, e.target.checked)}
+                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                          />
+                          <span className="text-sm">{method}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end space-x-2 pt-4">
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setShowEditDialog(false)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button 
+                      onClick={handleUpdateRequirement}
+                      data-testid="update-requirement-button"
+                    >
+                      Update Requirement
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
