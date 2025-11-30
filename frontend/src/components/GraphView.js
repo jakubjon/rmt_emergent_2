@@ -510,6 +510,8 @@ const GraphView = ({ activeProject, activeGroup, groups }) => {
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}
+            onNodeClick={handleNodeClick}
+            onEdgeClick={handleEdgeClick}
             nodeTypes={nodeTypes}
             fitView
             className="bg-slate-50"
