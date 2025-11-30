@@ -332,6 +332,14 @@ async def create_requirement(requirement: RequirementCreate):
     requirement_dict = prepare_for_mongo(requirement_obj.dict())
     
     await db.requirements.insert_one(requirement_dict)
+    
+    # Log requirement creation
+    await create_change_log_entry(
+        requirement_id=requirement_obj.id,
+        change_type="created",
+        change_description=f"Requirement {requirement_obj.req_id} created with title: {requirement_obj.title}"
+    )
+    
     return requirement_obj
 
 @api_router.get("/requirements", response_model=List[Requirement])
