@@ -192,13 +192,17 @@ const GraphView = ({ activeProject, activeGroup, groups }) => {
       }
     }));
 
-    // Create edges from parent-child relationships
+    // Create edges from parent-child relationships - ALLOW CROSS-GROUP RELATIONSHIPS
     const newEdges = [];
-    filteredRequirements.forEach(req => {
+    requirements.forEach(req => {
       req.child_ids?.forEach(childId => {
-        // Only create edge if both parent and child are in filtered requirements
-        const childExists = filteredRequirements.some(r => r.id === childId);
-        if (childExists) {
+        // Create edge if parent is visible and child exists (even in different group)
+        const parentVisible = filteredRequirements.some(r => r.id === req.id);
+        const childExists = requirements.some(r => r.id === childId);
+        const childVisible = filteredRequirements.some(r => r.id === childId);
+        
+        // Show edge if both parent and child are visible, OR if one is visible and we want to show cross-group relations
+        if (parentVisible && childExists && childVisible) {
           newEdges.push({
             id: `${req.id}-${childId}`,
             source: req.id,
@@ -214,6 +218,8 @@ const GraphView = ({ activeProject, activeGroup, groups }) => {
         }
       });
     });
+
+    console.log('Generated edges:', newEdges);
 
     setNodes(newNodes);
     setEdges(newEdges);
