@@ -82,25 +82,7 @@ const TableView = ({ activeProject, activeGroup, groups }) => {
     }
   }, [requirements, searchQuery]);
 
-  const fetchRequirements = async () => {
-    if (!activeProject?.id) return;
-    
-    setLoading(true);
-    try {
-      let url = `${API}/requirements?project_id=${activeProject.id}`;
-      if (activeGroup?.id) {
-        url += `&group_id=${activeGroup.id}`;
-      }
-      
-      const response = await axios.get(url);
-      setRequirements(response.data);
-    } catch (error) {
-      console.error('Error fetching requirements:', error);
-      toast.error('Failed to load requirements');
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Legacy fetchRequirements kept for reference; data loading now handled via useRequirements.loadRequirements
 
   const handleCreateRequirement = async () => {
     if (!newRequirement.title.trim() || !newRequirement.text.trim()) {
