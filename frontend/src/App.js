@@ -105,6 +105,20 @@ function App() {
     }
   };
 
+  const createDefaultGroup = async (projectId) => {
+    try {
+      const defaultGroupData = {
+        name: "Default Group",
+        description: "Default group for requirements",
+        project_id: projectId
+      };
+      return await createGroup(defaultGroupData);
+    } catch (error) {
+      console.error('Error creating default group:', error);
+      throw error;
+    }
+  };
+
   const activateGroup = async (groupId) => {
     try {
       await axios.put(`${API}/groups/${groupId}/activate`);
