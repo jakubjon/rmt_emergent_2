@@ -244,10 +244,7 @@ const TableView = ({ activeProject, activeGroup, groups }) => {
     }
 
     try {
-      await axios.delete(`${API}/requirements/${requirement.id}`);
-      
-      // Remove requirement from list
-      setRequirements(prev => prev.filter(req => req.id !== requirement.id));
+      await deleteRequirement(requirement.id);
       
       toast.success('Requirement deleted successfully!');
     } catch (error) {
