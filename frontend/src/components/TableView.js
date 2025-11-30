@@ -80,6 +80,64 @@ const TableView = ({ activeProject, activeGroup, groups }) => {
     }
   };
 
+  const handleCreateRequirement = async () => {
+    if (!newRequirement.title.trim() || !newRequirement.text.trim()) {
+      toast.error('Please fill in both title and text');
+      return;
+    }
+
+    if (!activeProject?.id) {
+      toast.error('No active project selected');
+      return;
+    }
+
+    // Use active group or first available group
+    const groupId = activeGroup?.id || groups[0]?.id;
+    if (!groupId) {
+      toast.error('Please create a group first');
+      return;
+    }
+
+    try {
+      const requirementData = {
+        ...newRequirement,
+        project_id: activeProject.id,
+        group_id: groupId,
+        verification_methods: newRequirement.verification_methods.filter(Boolean)
+      };
+
+      const response = await axios.post(`${API}/requirements`, requirementData);
+      
+      // Add new requirement to list
+      setRequirements(prev => [response.data, ...prev]);
+      
+      // Reset form
+      setNewRequirement({
+        title: '',
+        text: '',
+        status: 'Draft',
+        verification_methods: [],
+        group_id: '',
+        chapter_id: ''
+      });
+      
+      setShowCreateDialog(false);
+      toast.success('Requirement created successfully!');
+    } catch (error) {
+      console.error('Error creating requirement:', error);
+      toast.error('Failed to create requirement');
+    }
+  };
+
+  const handleVerificationMethodChange = (method, checked) => {
+    setNewRequirement(prev => ({
+      ...prev,
+      verification_methods: checked 
+        ? [...prev.verification_methods, method]
+        : prev.verification_methods.filter(m => m !== method)
+    }));
+  };
+
   const getStatusBadgeClass = (status) => {
     switch (status) {
       case 'Draft': return 'bg-gray-100 text-gray-700 border-gray-300';
