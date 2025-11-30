@@ -61,8 +61,15 @@ function App() {
       const newProject = response.data;
       setProjects(prev => [...prev, newProject]);
       setActiveProject(newProject);
-      setGroups([]); // Reset groups when switching projects
-      setActiveGroup(null);
+      
+      // Create a default group for the new project
+      try {
+        await createDefaultGroup(newProject.id);
+      } catch (groupError) {
+        console.error('Failed to create default group:', groupError);
+        // Don't fail project creation if group creation fails
+      }
+      
       toast.success('Project created successfully');
       return newProject;
     } catch (error) {
