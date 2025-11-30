@@ -198,10 +198,100 @@ const TableView = ({ activeProject, activeGroup, groups }) => {
             <Download className="h-4 w-4 mr-2" />
             Export
           </Button>
-          <Button size="sm" data-testid="create-requirement-button">
-            <Plus className="h-4 w-4 mr-2" />
-            New Requirement
-          </Button>
+          <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+            <DialogTrigger asChild>
+              <Button size="sm" data-testid="create-requirement-button">
+                <Plus className="h-4 w-4 mr-2" />
+                New Requirement
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Create New Requirement</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="req-title">Title *</Label>
+                  <Input
+                    id="req-title"
+                    value={newRequirement.title}
+                    onChange={(e) => setNewRequirement(prev => ({...prev, title: e.target.value}))}
+                    placeholder="Enter requirement title"
+                    data-testid="requirement-title-input"
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="req-text">Description *</Label>
+                  <Textarea
+                    id="req-text"
+                    value={newRequirement.text}
+                    onChange={(e) => setNewRequirement(prev => ({...prev, text: e.target.value}))}
+                    placeholder="Enter detailed requirement description (supports Markdown)"
+                    rows={4}
+                    data-testid="requirement-text-input"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="req-status">Status</Label>
+                  <Select 
+                    value={newRequirement.status} 
+                    onValueChange={(value) => setNewRequirement(prev => ({...prev, status: value}))}
+                  >
+                    <SelectTrigger data-testid="requirement-status-select">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Draft">Draft</SelectItem>
+                      <SelectItem value="In Review">In Review</SelectItem>
+                      <SelectItem value="Accepted">Accepted</SelectItem>
+                      <SelectItem value="Implemented">Implemented</SelectItem>
+                      <SelectItem value="Tested">Tested</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label>Verification Methods</Label>
+                  <div className="flex flex-wrap gap-4 mt-2">
+                    {['Analysis', 'Review', 'Inspection', 'Test'].map(method => (
+                      <label key={method} className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          checked={newRequirement.verification_methods.includes(method)}
+                          onChange={(e) => handleVerificationMethodChange(method, e.target.checked)}
+                          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        />
+                        <span className="text-sm">{method}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex justify-between items-center text-sm text-slate-600">
+                  <span>Project: {activeProject?.name}</span>
+                  <span>Group: {activeGroup?.name || groups[0]?.name || 'Default'}</span>
+                </div>
+
+                <div className="flex justify-end space-x-2 pt-4">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setShowCreateDialog(false)}
+                    data-testid="cancel-requirement-button"
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    onClick={handleCreateRequirement}
+                    data-testid="submit-requirement-button"
+                  >
+                    Create Requirement
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
