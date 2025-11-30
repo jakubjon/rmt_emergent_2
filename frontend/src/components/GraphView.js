@@ -328,6 +328,12 @@ const GraphView = ({ activeProject, activeGroup, groups }) => {
     setSelectedGroups(groupIds);
   };
 
+  const getGroupColor = (groupId) => {
+    const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'];
+    const index = groups.findIndex(g => g.id === groupId);
+    return colors[index % colors.length];
+  };
+
   const fitView = () => {
     // This would normally use the ReactFlow instance fitView method
     toast.info('Fit view functionality would center all nodes');
