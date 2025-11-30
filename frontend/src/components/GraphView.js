@@ -157,6 +157,7 @@ const GraphView = ({ activeProject, activeGroup, groups }) => {
   const [isCtrlPressed, setIsCtrlPressed] = useState(false);
   const [firstSelectedNode, setFirstSelectedNode] = useState(null);
   const [secondSelectedNode, setSecondSelectedNode] = useState(null);
+  const [selectedEdge, setSelectedEdge] = useState(null);
 
   useEffect(() => {
     if (activeProject?.id) {
