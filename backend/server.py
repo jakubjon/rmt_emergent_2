@@ -147,15 +147,19 @@ def prepare_for_mongo(data: dict) -> dict:
     return data
 
 def parse_from_mongo(item: dict) -> dict:
-    """Convert string dates back to datetime objects"""
+    """Convert string dates back to datetime objects and remove MongoDB internal fields"""
     if item is None:
         return item
+
+    # Remove MongoDB's internal _id field to avoid serialization issues
+    item.pop("_id", None)
     
-    for key in ['created_at', 'updated_at']:
+    for key in ["created_at", "updated_at"]:
         if key in item and isinstance(item[key], str):
             try:
                 item[key] = datetime.fromisoformat(item[key])
-            except:
+            except Exception:
+                # If parsing fails, leave the value as-is
                 pass
     return item
 
