@@ -294,6 +294,9 @@ const GraphView = ({ activeProject, activeGroup, groups }) => {
 
   // Handle node clicks for relationship creation
   const handleNodeClick = useCallback(async (event, node) => {
+    // Clear edge selection when clicking on nodes
+    setSelectedEdge(null);
+    
     if (!isCtrlPressed) return;
 
     if (!firstSelectedNode) {
