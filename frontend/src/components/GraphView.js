@@ -175,7 +175,7 @@ const GraphView = ({ activeProject, activeGroup, groups }) => {
       if (event.key === 'Control' || event.key === 'Meta') {
         setIsCtrlPressed(true);
       }
-      if (event.key === 'Delete' && firstSelectedNode) {
+      if (event.key === 'Delete' && selectedEdge) {
         // Handle edge deletion if an edge is selected
         handleDeleteSelectedEdge();
       }
