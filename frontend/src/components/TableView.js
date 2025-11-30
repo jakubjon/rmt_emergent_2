@@ -199,11 +199,21 @@ const TableView = ({ activeProject, activeGroup, groups }) => {
       setParentRequirements(parentDetails);
       setChildRequirements(childDetails);
       
+      // Fetch change log
+      try {
+        const changeLogResponse = await axios.get(`${API}/requirements/${requirement.id}/changelog`);
+        setChangeLog(changeLogResponse.data);
+      } catch (changeLogError) {
+        console.error('Error fetching change log:', changeLogError);
+        setChangeLog([]);
+      }
+      
     } catch (error) {
       console.error('Error in handleViewRequirement:', error);
       toast.error('Failed to load requirement details');
       setParentRequirements([]);
       setChildRequirements([]);
+      setChangeLog([]);
     }
   };
 
