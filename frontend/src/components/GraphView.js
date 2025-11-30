@@ -170,8 +170,9 @@ const GraphView = ({ activeProject, activeGroup, groups }) => {
       return selectedGroups.includes(req.group_id);
     });
 
-    console.log('Filtered requirements:', filteredRequirements);
-    console.log('All requirements:', requirements);
+    console.log('Selected groups:', selectedGroups);
+    console.log('Filtered requirements:', filteredRequirements.length);
+    console.log('All requirements:', requirements.length);
 
     // Create nodes with selection highlighting
     const newNodes = filteredRequirements.map((req, index) => ({
