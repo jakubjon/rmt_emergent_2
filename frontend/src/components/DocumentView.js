@@ -407,6 +407,106 @@ const DocumentView = ({ activeProject, activeGroup, groups }) => {
           })}
         </div>
       )}
+
+      {/* Edit Requirement Dialog */}
+      {editingRequirement && (
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/30">
+          <div className="bg-white rounded-lg shadow-lg max-w-2xl w-full p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold">
+                Edit Requirement - {editingRequirement.req_id}
+              </h2>
+              <button
+                className="text-slate-400 hover:text-slate-600"
+                onClick={() => setShowEditDialog(false)}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Title *</label>
+                <input
+                  type="text"
+                  className="w-full border border-slate-300 rounded px-3 py-2 text-sm"
+                  value={editingRequirement.title}
+                  onChange={(e) =>
+                    setEditingRequirement((prev) => ({ ...prev, title: e.target.value }))
+                  }
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">Description *</label>
+                <textarea
+                  className="w-full border border-slate-300 rounded px-3 py-2 text-sm"
+                  rows={4}
+                  value={editingRequirement.text}
+                  onChange={(e) =>
+                    setEditingRequirement((prev) => ({ ...prev, text: e.target.value }))
+                  }
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">Status</label>
+                <select
+                  className="w-48 border border-slate-300 rounded px-2 py-1 text-sm"
+                  value={editingRequirement.status}
+                  onChange={(e) =>
+                    setEditingRequirement((prev) => ({ ...prev, status: e.target.value }))
+                  }
+                >
+                  <option value="Draft">Draft</option>
+                  <option value="In Review">In Review</option>
+                  <option value="Accepted">Accepted</option>
+                  <option value="Implemented">Implemented</option>
+                  <option value="Tested">Tested</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">Verification Methods</label>
+                <div className="flex flex-wrap gap-4 mt-2">
+                  {['Analysis', 'Review', 'Inspection', 'Test'].map((method) => (
+                    <label key={method} className="flex items-center space-x-2 text-sm">
+                      <input
+                        type="checkbox"
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        checked={editingRequirement.verification_methods?.includes(method)}
+                        onChange={(e) => {
+                          const checked = e.target.checked;
+                          setEditingRequirement((prev) => ({
+                            ...prev,
+                            verification_methods: checked
+                              ? [...(prev.verification_methods || []), method]
+                              : (prev.verification_methods || []).filter((m) => m !== method),
+                          }));
+                        }}
+                      />
+                      <span>{method}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end space-x-2 mt-6">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowEditDialog(false)}
+              >
+                Cancel
+              </Button>
+              <Button size="sm" onClick={handleUpdateRequirement}>
+                Save Changes
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
