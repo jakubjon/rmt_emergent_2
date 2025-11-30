@@ -1014,6 +1014,26 @@ const TableView = ({ activeProject, activeGroup, groups }) => {
                   }
                   toast.success(`Status updated for ${selectedIds.length} requirement(s)`);
                 } catch (err) {
+          {/* Verification filter */}
+          <div className="flex items-center space-x-2">
+            <Label className="text-xs text-slate-500">Verification</Label>
+            <Select
+              onValueChange={(value) => setVerificationFilter(value)}
+              value={verificationFilter}
+            >
+              <SelectTrigger className="h-9 w-32 text-xs">
+                <SelectValue placeholder="All" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ALL">All</SelectItem>
+                <SelectItem value="Analysis">Analysis</SelectItem>
+                <SelectItem value="Review">Review</SelectItem>
+                <SelectItem value="Inspection">Inspection</SelectItem>
+                <SelectItem value="Test">Test</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
                   console.error('Batch update failed', err);
                   toast.error('Failed to batch update requirements');
                 }
