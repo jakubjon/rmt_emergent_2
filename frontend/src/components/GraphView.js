@@ -304,8 +304,7 @@ const GraphView = ({ activeProject, activeGroup, groups }) => {
       }
     });
 
-    console.log('Total edges created:', newEdges.length);
-    console.log('All edges:', newEdges);
+    // Graph generation complete
 
     setNodes(newNodes);
     setEdges(newEdges);
