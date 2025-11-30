@@ -202,10 +202,10 @@ const GraphView = ({ activeProject, activeGroup, groups }) => {
             target: childId,
             type: 'smoothstep',
             animated: false,
-            style: { stroke: '#64748b', strokeWidth: 2 },
+            style: { stroke: '#10b981', strokeWidth: 3 },
             markerEnd: {
               type: 'arrowclosed',
-              color: '#64748b',
+              color: '#10b981',
             },
           });
         }
