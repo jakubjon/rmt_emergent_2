@@ -407,9 +407,9 @@ const GraphView = ({ activeProject, activeGroup, groups }) => {
                 None
               </Button>
             </div>
-            <div className="space-y-2 max-h-40 overflow-y-auto">
+            <div className="space-y-2 max-h-60 overflow-y-auto border border-slate-200 rounded-md p-2 bg-slate-50">
               {groups.map(group => (
-                <label key={group.id} className="flex items-center space-x-2 text-sm cursor-pointer">
+                <label key={group.id} className="flex items-center space-x-2 text-sm cursor-pointer p-2 hover:bg-white rounded transition-colors">
                   <input 
                     type="checkbox" 
                     checked={selectedGroups.includes(group.id)}
@@ -422,7 +422,16 @@ const GraphView = ({ activeProject, activeGroup, groups }) => {
                     }}
                     className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                   />
-                  <span className="text-slate-700">{group.name}</span>
+                  <div className="flex-1">
+                    <span className="text-slate-700 font-medium">{group.name}</span>
+                    <div className="text-xs text-slate-500">
+                      {requirements.filter(req => req.group_id === group.id).length} requirements
+                    </div>
+                  </div>
+                  <div 
+                    className="w-3 h-3 rounded-full"
+                    style={{ backgroundColor: getGroupColor(group.id) }}
+                  />
                 </label>
               ))}
             </div>
