@@ -33,8 +33,16 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const TableView = ({ activeProject, activeGroup, groups }) => {
-  const [requirements, setRequirements] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const {
+    requirements,
+    loading,
+    loadRequirements,
+    createRequirement,
+    updateRequirement,
+    deleteRequirement,
+    fetchChangeLog,
+    setRequirements,
+  } = useRequirements();
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredRequirements, setFilteredRequirements] = useState([]);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
