@@ -186,6 +186,7 @@ const GraphView = ({ activeProject, activeGroup, groups }) => {
         setIsCtrlPressed(false);
         setFirstSelectedNode(null);
         setSecondSelectedNode(null);
+        setSelectedEdge(null);
       }
     };
 
