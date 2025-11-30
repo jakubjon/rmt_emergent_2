@@ -18,7 +18,7 @@ import { toast } from 'sonner';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-const Dashboard = ({ activeProject, activeGroup }) => {
+const Dashboard = ({ activeProject, activeGroup, groups }) => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(false);
 
