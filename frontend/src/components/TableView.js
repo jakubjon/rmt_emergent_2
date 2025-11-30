@@ -70,15 +70,32 @@ const TableView = ({ activeProject, activeGroup, groups }) => {
     }
   }, [activeProject, activeGroup, loadRequirements]);
 
-  // Filter requirements based on search query
+  // Filter requirements based on search, status, and verification
   const filteredRequirements = requirements.filter((req) => {
-    if (!searchQuery) return true;
-    const query = searchQuery.toLowerCase();
-    return (
-      req.req_id?.toLowerCase().includes(query) ||
-      req.title.toLowerCase().includes(query) ||
-      req.text.toLowerCase().includes(query)
-    );
+    // Text search
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      const matchesText =
+        req.req_id?.toLowerCase().includes(query) ||
+        req.title.toLowerCase().includes(query) ||
+        req.text.toLowerCase().includes(query);
+      if (!matchesText) return false;
+    }
+
+    // Status filter
+    if (statusFilter !== 'ALL' && req.status !== statusFilter) {
+      return false;
+    }
+
+    // Verification filter
+    if (
+      verificationFilter !== 'ALL' &&
+      !(req.verification_methods || []).includes(verificationFilter)
+    ) {
+      return false;
+    }
+
+    return true;
   });
 
   const allVisibleSelected =
