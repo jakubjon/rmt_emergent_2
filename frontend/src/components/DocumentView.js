@@ -419,7 +419,10 @@ const DocumentView = ({ activeProject, activeGroup, groups }) => {
               </h2>
               <button
                 className="text-slate-400 hover:text-slate-600"
-                onClick={() => setShowEditDialog(false)}
+                onClick={() => {
+                  setEditingRequirement(null);
+                  setShowEditDialog(false);
+                }}
               >
                 ✕
               </button>
