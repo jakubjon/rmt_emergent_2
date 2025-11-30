@@ -363,6 +363,7 @@ const DocumentView = ({ activeProject, activeGroup, groups }) => {
                                   <Button 
                                     variant="ghost" 
                                     size="sm"
+                                    onClick={() => handleEditRequirement(requirement)}
                                     data-testid={`edit-requirement-${requirement.id}`}
                                   >
                                     <Edit className="h-4 w-4" />
