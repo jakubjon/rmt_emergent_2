@@ -43,6 +43,7 @@ const TableView = ({ activeProject, activeGroup, groups }) => {
   const [editRequirement, setEditRequirement] = useState(null);
   const [parentRequirements, setParentRequirements] = useState([]);
   const [childRequirements, setChildRequirements] = useState([]);
+  const [changeLog, setChangeLog] = useState([]);
   const [newRequirement, setNewRequirement] = useState({
     title: '',
     text: '',
