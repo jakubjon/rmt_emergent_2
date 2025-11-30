@@ -68,19 +68,16 @@ const TableView = ({ activeProject, activeGroup, groups }) => {
     }
   }, [activeProject, activeGroup, loadRequirements]);
 
-  useEffect(() => {
-    // Filter requirements based on search query
-    if (searchQuery) {
-      const filtered = requirements.filter(req => 
-        req.req_id?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        req.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        req.text.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-      setFilteredRequirements(filtered);
-    } else {
-      setFilteredRequirements(requirements);
-    }
-  }, [requirements, searchQuery]);
+  // Filter requirements based on search query
+  const filteredRequirements = requirements.filter((req) => {
+    if (!searchQuery) return true;
+    const query = searchQuery.toLowerCase();
+    return (
+      req.req_id?.toLowerCase().includes(query) ||
+      req.title.toLowerCase().includes(query) ||
+      req.text.toLowerCase().includes(query)
+    );
+  });
 
   // Legacy fetchRequirements kept for reference; data loading now handled via useRequirements.loadRequirements
 
