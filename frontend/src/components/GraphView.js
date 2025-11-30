@@ -641,11 +641,16 @@ const GraphView = ({ activeProject, activeGroup, groups }) => {
                   <div className={`w-2 h-2 rounded-full ${isCtrlPressed ? 'bg-green-500' : 'bg-gray-400'}`}></div>
                   <span>Hold Ctrl + Click to create relationships</span>
                 </div>
-                <div>Click arrow + Confirm to remove relationships</div>
+                <div>Click arrow to select, then press Delete</div>
                 <div>Drag nodes to reposition</div>
                 {firstSelectedNode && (
                   <div className="text-blue-600 font-medium">
                     Selected: {firstSelectedNode.data.req_id} → Select child
+                  </div>
+                )}
+                {selectedEdge && (
+                  <div className="text-red-600 font-medium">
+                    Selected relationship → Press Delete to remove
                   </div>
                 )}
               </div>
