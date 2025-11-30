@@ -279,9 +279,6 @@ const GraphView = ({ activeProject, activeGroup, groups }) => {
       });
     });
 
-    console.log('Setting nodes:', newNodes.length);
-    console.log('Setting edges:', newEdges.length);
-    
     setNodes(newNodes);
     setEdges(newEdges);
   };
