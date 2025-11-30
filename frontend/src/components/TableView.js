@@ -924,6 +924,20 @@ const TableView = ({ activeProject, activeGroup, groups }) => {
                     className="table-row hover:bg-slate-50 transition-colors"
                     data-testid={`requirement-row-${requirement.id}`}
                   >
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-slate-900">
+                      <input
+                        type="checkbox"
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        checked={selectedIds.includes(requirement.id)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedIds((prev) => [...prev, requirement.id]);
+                          } else {
+                            setSelectedIds((prev) => prev.filter((id) => id !== requirement.id));
+                          }
+                        }}
+                      />
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900">
                       {requirement.req_id}
                     </td>
