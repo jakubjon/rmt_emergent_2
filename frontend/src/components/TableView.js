@@ -540,6 +540,7 @@ const TableView = ({ activeProject, activeGroup, groups }) => {
                         <Button 
                           variant="ghost" 
                           size="sm" 
+                          onClick={() => handleViewRequirement(requirement)}
                           data-testid={`view-requirement-${requirement.id}`}
                         >
                           <Eye className="h-4 w-4" />
@@ -547,6 +548,7 @@ const TableView = ({ activeProject, activeGroup, groups }) => {
                         <Button 
                           variant="ghost" 
                           size="sm"
+                          onClick={() => handleEditRequirement(requirement)}
                           data-testid={`edit-requirement-${requirement.id}`}
                         >
                           <Edit className="h-4 w-4" />
@@ -555,6 +557,7 @@ const TableView = ({ activeProject, activeGroup, groups }) => {
                           variant="ghost" 
                           size="sm" 
                           className="text-red-600 hover:text-red-700"
+                          onClick={() => handleDeleteRequirement(requirement)}
                           data-testid={`delete-requirement-${requirement.id}`}
                         >
                           <Trash2 className="h-4 w-4" />
