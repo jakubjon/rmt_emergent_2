@@ -127,6 +127,17 @@ class RequirementRelationship(BaseModel):
     parent_id: str
     child_id: str
 
+class RequirementChangeLog(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    requirement_id: str
+    change_type: str  # 'created', 'updated', 'status_changed', 'relationship_added', 'relationship_removed'
+    field_name: Optional[str] = None  # Which field was changed
+    old_value: Optional[str] = None
+    new_value: Optional[str] = None
+    change_description: str
+    changed_by: Optional[str] = None  # User who made the change
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
 # Helper functions
 def prepare_for_mongo(data: dict) -> dict:
     """Convert datetime objects to strings for MongoDB storage"""
