@@ -621,16 +621,44 @@ async def delete_relationship(parent_id: str, child_id: str):
     return {"message": "Relationship deleted"}
 
 @api_router.put("/requirements/batch")
-async def batch_update_requirements(requirement_ids: List[str], update_data: Dict[str, Any]):
-    # Update multiple requirements at once
-    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
-    
-    result = await db.requirements.update_many(
-        {"id": {"$in": requirement_ids}},
-        {"$set": update_data}
-    )
-    
-    return {"message": f"Updated {result.modified_count} requirements"}
+async def batch_update_requirements(payload: Dict[str, Any]):
+    """Batch update requirements by delegating to the shared update helper.
+
+    Expected JSON body:
+    {
+        "requirement_ids": ["id1", "id2", ...],
+        "update": { ... fields from RequirementUpdate ... }
+    }
+    """
+    requirement_ids = payload.get("requirement_ids") or []
+    update_raw = payload.get("update") or {}
+
+    if not requirement_ids:
+        raise HTTPException(status_code=400, detail="No requirement_ids provided")
+
+    # Build a RequirementUpdate model from the raw update dict
+    update_model = RequirementUpdate(**update_raw)
+
+    updated: List[Requirement] = []
+    failed: List[str] = []
+
+    for req_id in requirement_ids:
+        try:
+            updated_req = await update_requirement_with_logging(
+                requirement_id=req_id,
+                update_data=update_model,
+                actor="System(batch)",
+            )
+            updated.append(updated_req)
+        except HTTPException:
+            # If a requirement is not found or update fails, record it and continue
+            failed.append(req_id)
+
+    return {
+        "updated_count": len(updated),
+        "failed_ids": failed,
+        "updated_requirements": updated,
+    }
 
 @api_router.delete("/requirements/{requirement_id}")
 async def delete_requirement(requirement_id: str):
