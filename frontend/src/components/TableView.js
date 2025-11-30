@@ -839,6 +839,20 @@ const TableView = ({ activeProject, activeGroup, groups }) => {
           <table className="w-full">
             <thead className="table-header">
               <tr>
+                <th className="px-4 py-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                  <input
+                    type="checkbox"
+                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    checked={allVisibleSelected}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setSelectedIds(filteredRequirements.map((req) => req.id));
+                      } else {
+                        setSelectedIds([]);
+                      }
+                    }}
+                  />
+                </th>
                 <th className="px-6 py-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                   ID
                 </th>
