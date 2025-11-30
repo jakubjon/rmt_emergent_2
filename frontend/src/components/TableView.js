@@ -580,48 +580,91 @@ const TableView = ({ activeProject, activeGroup, groups }) => {
                   
                   <TabsContent value="history" className="space-y-4">
                     <Card className="p-4">
-                      <div className="flex items-center space-x-2 mb-3">
-                        <Users className="h-4 w-4 text-slate-600" />
-                        <Label className="font-medium">Change History</Label>
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center space-x-2">
+                          <Clock className="h-4 w-4 text-slate-600" />
+                          <Label className="font-medium">Complete Change History</Label>
+                        </div>
+                        <Badge variant="secondary" className="text-xs">
+                          {changeLog.length} changes
+                        </Badge>
                       </div>
                       
-                      <div className="space-y-3">
-                        <div className="flex items-start space-x-3 p-3 bg-slate-50 rounded-lg">
-                          <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
-                          <div className="flex-1">
-                            <div className="flex items-center justify-between">
-                              <p className="font-medium text-sm">Requirement Created</p>
-                              <span className="text-xs text-slate-500">
-                                {new Date(selectedRequirement.created_at).toLocaleString()}
-                              </span>
-                            </div>
-                            <p className="text-xs text-slate-600 mt-1">
-                              Initial requirement created with status: {selectedRequirement.status}
-                            </p>
-                          </div>
+                      {changeLog.length === 0 ? (
+                        <div className="text-center py-8">
+                          <Clock className="h-12 w-12 text-slate-300 mx-auto mb-3" />
+                          <p className="text-slate-500">No change history available</p>
+                          <p className="text-xs text-slate-400 mt-1">Changes will appear here as the requirement is modified</p>
                         </div>
-                        
-                        {selectedRequirement.updated_at !== selectedRequirement.created_at && (
-                          <div className="flex items-start space-x-3 p-3 bg-blue-50 rounded-lg">
-                            <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
-                            <div className="flex-1">
-                              <div className="flex items-center justify-between">
-                                <p className="font-medium text-sm">Requirement Updated</p>
-                                <span className="text-xs text-slate-500">
-                                  {new Date(selectedRequirement.updated_at).toLocaleString()}
-                                </span>
+                      ) : (
+                        <div className="space-y-3 max-h-96 overflow-y-auto">
+                          {changeLog.map((change, index) => {
+                            const getChangeIcon = (changeType) => {
+                              switch (changeType) {
+                                case 'created': return { icon: '✨', color: 'bg-green-500' };
+                                case 'updated': return { icon: '✏️', color: 'bg-blue-500' };
+                                case 'relationship_added': return { icon: '🔗', color: 'bg-purple-500' };
+                                case 'relationship_removed': return { icon: '💔', color: 'bg-red-500' };
+                                default: return { icon: '📝', color: 'bg-gray-500' };
+                              }
+                            };
+                            
+                            const changeDisplay = getChangeIcon(change.change_type);
+                            
+                            return (
+                              <div key={change.id || index} className="flex items-start space-x-3 p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
+                                <div className={`w-8 h-8 ${changeDisplay.color} rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0`}>
+                                  {changeDisplay.icon}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center justify-between mb-1">
+                                    <p className="font-medium text-sm text-slate-900 capitalize">
+                                      {change.change_type.replace('_', ' ')}
+                                    </p>
+                                    <span className="text-xs text-slate-500 flex-shrink-0">
+                                      {new Date(change.created_at).toLocaleString()}
+                                    </span>
+                                  </div>
+                                  
+                                  <p className="text-xs text-slate-600 mb-2">
+                                    {change.change_description}
+                                  </p>
+                                  
+                                  {change.field_name && change.old_value && change.new_value && (
+                                    <div className="text-xs bg-white p-2 rounded border-l-2 border-blue-200">
+                                      <div className="flex items-center space-x-2 mb-1">
+                                        <span className="font-medium text-slate-700">Field:</span>
+                                        <code className="bg-slate-100 px-1 rounded">{change.field_name}</code>
+                                      </div>
+                                      <div className="grid grid-cols-2 gap-2 text-xs">
+                                        <div>
+                                          <span className="text-red-600 font-medium">Before:</span>
+                                          <div className="bg-red-50 p-1 rounded mt-1 text-red-800">
+                                            {change.old_value}
+                                          </div>
+                                        </div>
+                                        <div>
+                                          <span className="text-green-600 font-medium">After:</span>
+                                          <div className="bg-green-50 p-1 rounded mt-1 text-green-800">
+                                            {change.new_value}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
+                                  
+                                  {change.changed_by && (
+                                    <div className="flex items-center space-x-1 mt-2">
+                                      <Users className="h-3 w-3 text-slate-400" />
+                                      <span className="text-xs text-slate-500">by {change.changed_by}</span>
+                                    </div>
+                                  )}
+                                </div>
                               </div>
-                              <p className="text-xs text-slate-600 mt-1">
-                                Requirement details were modified
-                              </p>
-                            </div>
-                          </div>
-                        )}
-                        
-                        <p className="text-xs text-slate-500 italic mt-4">
-                          * Detailed change tracking will be implemented in future versions
-                        </p>
-                      </div>
+                            );
+                          })}
+                        </div>
+                      )}
                     </Card>
                   </TabsContent>
                   
