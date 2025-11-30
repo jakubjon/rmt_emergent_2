@@ -150,6 +150,99 @@ const TableView = ({ activeProject, activeGroup, groups }) => {
     }));
   };
 
+  const handleViewRequirement = async (requirement) => {
+    setSelectedRequirement(requirement);
+    
+    // Fetch parent and child details
+    try {
+      const allReqs = await Promise.all([
+        ...requirement.parent_ids.map(id => 
+          axios.get(`${API}/requirements/${id}`).catch(() => null)
+        ),
+        ...requirement.child_ids.map(id => 
+          axios.get(`${API}/requirements/${id}`).catch(() => null)
+        )
+      ]);
+      
+      const parentDetails = allReqs.slice(0, requirement.parent_ids.length)
+        .filter(Boolean).map(res => res.data);
+      const childDetails = allReqs.slice(requirement.parent_ids.length)
+        .filter(Boolean).map(res => res.data);
+      
+      setParentRequirements(parentDetails);
+      setChildRequirements(childDetails);
+    } catch (error) {
+      console.error('Error fetching related requirements:', error);
+    }
+    
+    setShowViewDialog(true);
+  };
+
+  const handleEditRequirement = (requirement) => {
+    setEditRequirement({
+      ...requirement,
+      verification_methods: requirement.verification_methods || []
+    });
+    setShowEditDialog(true);
+  };
+
+  const handleUpdateRequirement = async () => {
+    if (!editRequirement.title.trim() || !editRequirement.text.trim()) {
+      toast.error('Please fill in both title and text');
+      return;
+    }
+
+    try {
+      const updateData = {
+        title: editRequirement.title,
+        text: editRequirement.text,
+        status: editRequirement.status,
+        verification_methods: editRequirement.verification_methods.filter(Boolean)
+      };
+
+      const response = await axios.put(`${API}/requirements/${editRequirement.id}`, updateData);
+      
+      // Update requirement in list
+      setRequirements(prev => 
+        prev.map(req => req.id === editRequirement.id ? response.data : req)
+      );
+      
+      setShowEditDialog(false);
+      setEditRequirement(null);
+      toast.success('Requirement updated successfully!');
+    } catch (error) {
+      console.error('Error updating requirement:', error);
+      toast.error('Failed to update requirement');
+    }
+  };
+
+  const handleDeleteRequirement = async (requirement) => {
+    if (!confirm(`Are you sure you want to delete "${requirement.req_id}: ${requirement.title}"?\n\nThis will also remove all its relationships.`)) {
+      return;
+    }
+
+    try {
+      await axios.delete(`${API}/requirements/${requirement.id}`);
+      
+      // Remove requirement from list
+      setRequirements(prev => prev.filter(req => req.id !== requirement.id));
+      
+      toast.success('Requirement deleted successfully!');
+    } catch (error) {
+      console.error('Error deleting requirement:', error);
+      toast.error('Failed to delete requirement');
+    }
+  };
+
+  const handleEditVerificationMethodChange = (method, checked) => {
+    setEditRequirement(prev => ({
+      ...prev,
+      verification_methods: checked 
+        ? [...prev.verification_methods, method]
+        : prev.verification_methods.filter(m => m !== method)
+    }));
+  };
+
   const getStatusBadgeClass = (status) => {
     switch (status) {
       case 'Draft': return 'bg-gray-100 text-gray-700 border-gray-300';
