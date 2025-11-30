@@ -371,7 +371,11 @@ const TableView = ({ activeProject, activeGroup, groups }) => {
                         }
                       </p>
                       {!searchQuery && (
-                        <Button size="sm" data-testid="empty-state-create-button">
+                        <Button 
+                          size="sm" 
+                          onClick={() => setShowCreateDialog(true)}
+                          data-testid="empty-state-create-button"
+                        >
                           <Plus className="h-4 w-4 mr-2" />
                           Create First Requirement
                         </Button>
