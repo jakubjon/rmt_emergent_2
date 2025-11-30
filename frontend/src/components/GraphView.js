@@ -113,6 +113,35 @@ const GraphView = ({ activeProject, activeGroup, groups }) => {
     }
   }, [activeProject, activeGroup]);
 
+  // Add keyboard event listeners for Ctrl key
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === 'Control' || event.key === 'Meta') {
+        setIsCtrlPressed(true);
+      }
+      if (event.key === 'Delete' && firstSelectedNode) {
+        // Handle edge deletion if an edge is selected
+        handleDeleteSelectedEdge();
+      }
+    };
+
+    const handleKeyUp = (event) => {
+      if (event.key === 'Control' || event.key === 'Meta') {
+        setIsCtrlPressed(false);
+        setFirstSelectedNode(null);
+        setSecondSelectedNode(null);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keyup', handleKeyUp);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('keyup', handleKeyUp);
+    };
+  }, [firstSelectedNode]);
+
   useEffect(() => {
     if (requirements.length > 0) {
       generateGraphData();
