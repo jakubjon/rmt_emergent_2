@@ -1191,41 +1191,101 @@ const TableView = ({ activeProject, activeGroup, groups }) => {
           <table className="w-full">
             <thead className="table-header">
               <tr>
-                <th className="px-4 py-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                  <input
-                    type="checkbox"
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    checked={allVisibleSelected}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setSelectedIds(filteredRequirements.map((req) => req.id));
-                      } else {
-                        setSelectedIds([]);
-                      }
-                    }}
-                  />
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                  ID
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                  Title
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                  Verification
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                  Parents
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                  Children
-                </th>
-                <th className="px-6 py-4 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">
-                  Actions
-                </th>
+                {columnOrder.map((colKey) => {
+                  const width = columnWidths[colKey];
+                  const style = width ? { width, minWidth: width } : undefined;
+
+                  if (colKey === 'select') {
+                    return (
+                      <th
+                        key={colKey}
+                        className="px-2 py-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider align-middle"
+                        style={style}
+                      >
+                        <div className="flex items-center justify-between">
+                          <input
+                            type="checkbox"
+                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                            checked={allVisibleSelected}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setSelectedIds(filteredRequirements.map((req) => req.id));
+                              } else {
+                                setSelectedIds([]);
+                              }
+                            }}
+                          />
+                          <div className="flex items-center space-x-1 text-slate-400">
+                            <button
+                              type="button"
+                              className="text-[10px] leading-none"
+                              onClick={() => moveColumn(colKey, -1)}
+                            >
+                              ←
+                            </button>
+                            <button
+                              type="button"
+                              className="text-[10px] leading-none"
+                              onClick={() => moveColumn(colKey, 1)}
+                            >
+                              →
+                            </button>
+                          </div>
+                          <div
+                            className="w-1 cursor-col-resize ml-1"
+                            onMouseDown={(e) => startResize(colKey, e)}
+                          />
+                        </div>
+                      </th>
+                    );
+                  }
+
+                  const labelMap = {
+                    id: 'ID',
+                    title: 'Title',
+                    status: 'Status',
+                    verification: 'Verification',
+                    parents: 'Parents',
+                    children: 'Children',
+                    actions: 'Actions',
+                  };
+
+                  const alignRight = colKey === 'actions';
+
+                  return (
+                    <th
+                      key={colKey}
+                      className={`px-4 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider ${
+                        alignRight ? 'text-right' : 'text-left'
+                      }`}
+                      style={style}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span>{labelMap[colKey]}</span>
+                        <div className="flex items-center space-x-1 text-slate-400">
+                          <button
+                            type="button"
+                            className="text-[10px] leading-none"
+                            onClick={() => moveColumn(colKey, -1)}
+                          >
+                            ←
+                          </button>
+                          <button
+                            type="button"
+                            className="text-[10px] leading-none"
+                            onClick={() => moveColumn(colKey, 1)}
+                          >
+                            →
+                          </button>
+                        </div>
+                        <div
+                          className="w-1 cursor-col-resize ml-1"
+                          onMouseDown={(e) => startResize(colKey, e)}
+                        />
+                      </div>
+                    </th>
+                  );
+                })}
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-slate-200">
