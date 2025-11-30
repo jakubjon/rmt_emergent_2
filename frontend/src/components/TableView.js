@@ -136,7 +136,6 @@ const TableView = ({ activeProject, activeGroup, groups }) => {
       toast.error('No requirements to export');
       return;
     }
-  const handleExport = () => {
     if (!requirements || requirements.length === 0) {
       toast.error('No requirements to export');
       return;
