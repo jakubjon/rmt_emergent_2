@@ -270,7 +270,7 @@ const SideNavigation = ({
         </SectionHeader>
 
         {/* Group Section */}
-        <SectionHeader section="group" title="Group">
+        <SectionHeader section="group" title="Group" expandedSections={expandedSections} toggleSection={toggleSection}>
           <div className="space-y-3 ml-2">
             {activeGroup && (
               <div className="p-3 bg-green-50 rounded-lg border-l-4 border-green-500">
