@@ -500,7 +500,10 @@ const DocumentView = ({ activeProject, activeGroup, groups }) => {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setShowEditDialog(false)}
+                onClick={() => {
+                  setEditingRequirement(null);
+                  setShowEditDialog(false);
+                }}
               >
                 Cancel
               </Button>
