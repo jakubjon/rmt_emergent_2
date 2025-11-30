@@ -274,8 +274,9 @@ const GraphView = ({ activeProject, activeGroup, groups }) => {
     // Create edges from parent-child relationships - FIXED VERSION
     const newEdges = [];
     filteredRequirements.forEach(req => {
-      if (req.child_ids && req.child_ids.length > 0) {
-        req.child_ids.forEach(childId => {
+      const childIds = req.child_ids || [];
+      if (childIds.length > 0) {
+        childIds.forEach(childId => {
           // Only create edge if both parent and child are in filtered requirements
           const childVisible = filteredRequirements.some(r => r.id === childId);
           
