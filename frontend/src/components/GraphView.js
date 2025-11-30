@@ -361,12 +361,19 @@ const GraphView = ({ activeProject, activeGroup, groups }) => {
     }
   };
 
-  // Handle edge click for deletion
+  // Handle edge click for selection
   const handleEdgeClick = useCallback((event, edge) => {
-    if (event.key === 'Delete' || confirm('Delete this relationship?')) {
-      deleteRelationship(edge.source, edge.target);
+    event.stopPropagation();
+    setSelectedEdge(edge);
+    
+    // Find the parent and child requirements for the toast message
+    const parentReq = requirements.find(r => r.id === edge.source);
+    const childReq = requirements.find(r => r.id === edge.target);
+    
+    if (parentReq && childReq) {
+      toast.info(`Selected relationship: ${parentReq.req_id} → ${childReq.req_id}. Press Delete to remove.`);
     }
-  }, []);
+  }, [requirements]);
 
   const deleteRelationship = async (parentId, childId) => {
     try {
