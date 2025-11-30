@@ -177,6 +177,7 @@ function App() {
                   <Dashboard 
                     activeProject={activeProject} 
                     activeGroup={activeGroup}
+                    groups={groups}
                   />
                 } 
               />
