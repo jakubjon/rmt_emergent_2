@@ -116,23 +116,6 @@ const SideNavigation = ({
     }));
   };
 
-  const SectionHeader = ({ section, title, children }) => (
-    <div className="mb-4">
-      <button
-        onClick={() => toggleSection(section)}
-        className="flex items-center justify-between w-full p-2 text-sm font-medium text-slate-600 hover:text-slate-800 transition-colors"
-        data-testid={`section-${section}-toggle`}
-      >
-        <span>{title}</span>
-        {expandedSections[section] ? 
-          <ChevronDown className="h-4 w-4" /> : 
-          <ChevronRight className="h-4 w-4" />
-        }
-      </button>
-      {expandedSections[section] && children}
-    </div>
-  );
-
   return (
     <div className="w-80 bg-white border-r border-slate-200 h-screen overflow-y-auto shadow-lg">
       <div className="p-6">
