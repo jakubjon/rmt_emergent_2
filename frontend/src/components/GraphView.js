@@ -298,7 +298,7 @@ const GraphView = ({ activeProject, activeGroup, groups }) => {
               label: '',
             };
             newEdges.push(edge);
-            console.log('Created edge:', edge);
+            // Edge created successfully
           }
         });
       }
