@@ -30,6 +30,28 @@ import { toast } from 'sonner';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
+// Custom group node component
+const GroupNode = ({ data }) => {
+  return (
+    <div 
+      className="group-node relative border-2 border-dashed rounded-xl p-4 bg-opacity-10"
+      style={{
+        borderColor: `${data.color}60`,
+        backgroundColor: `${data.color}10`,
+        minHeight: '200px',
+        minWidth: '300px',
+      }}
+    >
+      <div 
+        className="absolute top-2 left-2 px-3 py-1 rounded-md text-sm font-semibold text-white shadow-md"
+        style={{ backgroundColor: data.color }}
+      >
+        {data.label}
+      </div>
+    </div>
+  );
+};
+
 // Custom node component for requirements
 const RequirementNode = ({ data, selected }) => {
   const getStatusColor = (status) => {
