@@ -460,9 +460,11 @@ const TableView = ({ activeProject, activeGroup, groups }) => {
                     <div>
                       <Label className="text-sm font-medium text-slate-600">Description</Label>
                       <div className="mt-2 p-4 bg-slate-50 rounded-lg">
-                        <ReactMarkdown className="prose prose-sm max-w-none">
-                          {selectedRequirement.text || 'No description provided'}
-                        </ReactMarkdown>
+                        <div className="prose prose-sm max-w-none">
+                          <ReactMarkdown>
+                            {selectedRequirement.text || 'No description provided'}
+                          </ReactMarkdown>
+                        </div>
                       </div>
                     </div>
                     
