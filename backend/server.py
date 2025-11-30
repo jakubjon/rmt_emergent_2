@@ -602,31 +602,8 @@ async def batch_update_requirements(requirement_ids: List[str], update_data: Dic
 
 @api_router.delete("/requirements/{requirement_id}")
 async def delete_requirement(requirement_id: str):
-    # Get requirement to find relationships
-    requirement = await db.requirements.find_one({"id": requirement_id})
-    if not requirement:
-        raise HTTPException(status_code=404, detail="Requirement not found")
-    
-    # Remove this requirement from all parent-child relationships
-    parent_ids = requirement.get("parent_ids", [])
-    child_ids = requirement.get("child_ids", [])
-    
-    # Remove from parents' child_ids
-    for parent_id in parent_ids:
-        await db.requirements.update_one(
-            {"id": parent_id},
-            {"$pull": {"child_ids": requirement_id}}
-        )
-    
-    # Remove from children's parent_ids
-    for child_id in child_ids:
-        await db.requirements.update_one(
-            {"id": child_id},
-            {"$pull": {"parent_ids": requirement_id}}
-        )
-    
-    # Delete the requirement
-    await db.requirements.delete_one({"id": requirement_id})
+    """API endpoint wrapper around delete_requirement_with_logging"""
+    await delete_requirement_with_logging(requirement_id=requirement_id, actor="System")
     return {"message": "Requirement deleted"}
 
 # Dashboard statistics
