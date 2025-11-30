@@ -372,6 +372,119 @@ async def get_requirement(requirement_id: str):
     return await get_requirement_by_id(requirement_id)
 
 
+async def update_requirement_with_logging(
+    requirement_id: str,
+    update_data: RequirementUpdate,
+    actor: Optional[str] = None,
+) -> Requirement:
+    """Core requirement update logic with detailed change logging.
+
+    This helper centralizes:
+    - field diffing
+    - parent/child relationship maintenance
+    - change log entry creation
+    """
+    # Get current requirement
+    current_req = await db.requirements.find_one({"id": requirement_id})
+    if not current_req:
+        raise HTTPException(status_code=404, detail="Requirement not found")
+
+    # Track changes for logging
+    changes = []
+    update_dict: Dict[str, Any] = {}
+
+    for field, new_value in update_data.dict().items():
+        if new_value is not None:
+            old_value = current_req.get(field)
+
+            # Convert lists to strings for comparison
+            if isinstance(old_value, list):
+                old_value_str = ", ".join(old_value) if old_value else "None"
+            else:
+                old_value_str = str(old_value) if old_value else "None"
+
+            if isinstance(new_value, list):
+                new_value_str = ", ".join(new_value) if new_value else "None"
+            else:
+                new_value_str = str(new_value)
+
+            # Check if value actually changed
+            if old_value != new_value:
+                update_dict[field] = new_value
+                changes.append(
+                    {
+                        "field": field,
+                        "old_value": old_value_str,
+                        "new_value": new_value_str,
+                    }
+                )
+
+    if not changes:
+        # No actual changes, return current requirement as model
+        return Requirement(**parse_from_mongo(current_req))
+
+    update_dict["updated_at"] = datetime.now(timezone.utc).isoformat()
+
+    # Handle parent-child relationships if parent_ids changed
+    if "parent_ids" in update_dict:
+        old_parents = set(current_req.get("parent_ids", []))
+        new_parents = set(update_dict["parent_ids"])
+
+        # Remove this requirement from old parents' child_ids
+        for parent_id in old_parents - new_parents:
+            await db.requirements.update_one(
+                {"id": parent_id},
+                {"$pull": {"child_ids": requirement_id}},
+            )
+
+        # Add this requirement to new parents' child_ids
+        for parent_id in new_parents - old_parents:
+            await db.requirements.update_one(
+                {"id": parent_id},
+                {"$addToSet": {"child_ids": requirement_id}},
+            )
+
+    result = await db.requirements.update_one(
+        {"id": requirement_id},
+        {"$set": update_dict},
+    )
+
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Requirement not found")
+
+    # Create change log entries
+    for change in changes:
+        field_display_names = {
+            "title": "Title",
+            "text": "Description",
+            "status": "Status",
+            "verification_methods": "Verification Methods",
+            "group_id": "Group",
+            "chapter_id": "Chapter",
+        }
+
+        field_display = field_display_names.get(
+            change["field"], change["field"].replace("_", " ").title()
+        )
+
+        await create_change_log_entry(
+            requirement_id=requirement_id,
+            change_type="updated",
+            field_name=change["field"],
+            old_value=change["old_value"],
+            new_value=change["new_value"],
+            change_description=(
+                f"{field_display} changed from '"
+                f"{change['old_value']}' to '{change['new_value']}'"
+            ),
+            changed_by=actor or "System",
+        )
+
+    updated_req = await db.requirements.find_one({"id": requirement_id})
+    return Requirement(**parse_from_mongo(updated_req))
+
+
+
 async def get_requirement_by_id(requirement_id: str) -> Requirement:
     """Service helper to fetch a requirement or raise 404"""
     requirement = await db.requirements.find_one({"id": requirement_id})
