@@ -8,6 +8,8 @@ import ReactFlow, {
   useEdgesState,
   addEdge,
   Panel,
+  Handle,
+  Position,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { Button } from './ui/button';
