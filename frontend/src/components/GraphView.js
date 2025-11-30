@@ -193,9 +193,7 @@ const GraphView = ({ activeProject, activeGroup, groups }) => {
       return selectedGroups.includes(req.group_id);
     });
 
-    console.log('Selected groups:', selectedGroups);
-    console.log('Filtered requirements:', filteredRequirements.length);
-    console.log('All requirements:', requirements.length);
+    // Debug info available in React DevTools
 
     // Group requirements by group_id for positioning
     const groupedRequirements = {};
