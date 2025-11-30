@@ -4,7 +4,7 @@ import axios from 'axios';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-export function useRequirements(initialFilters = {}) {
+export function useRequirements() {
   const [requirements, setRequirements] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -14,7 +14,7 @@ export function useRequirements(initialFilters = {}) {
     setError(null);
     try {
       const params = new URLSearchParams();
-      const { projectId, groupId, chapterId, status } = { ...initialFilters, ...filters };
+      const { projectId, groupId, chapterId, status } = filters;
 
       if (projectId) params.append('project_id', projectId);
       if (groupId) params.append('group_id', groupId);
@@ -30,7 +30,7 @@ export function useRequirements(initialFilters = {}) {
     } finally {
       setLoading(false);
     }
-  }, [initialFilters]);
+  }, []);
 
   const createRequirement = useCallback(async (payload) => {
     const response = await axios.post(`${API}/requirements`, payload);
