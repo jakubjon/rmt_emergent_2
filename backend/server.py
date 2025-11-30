@@ -368,6 +368,57 @@ async def get_requirements(
 
 @api_router.get("/requirements/{requirement_id}", response_model=Requirement)
 async def get_requirement(requirement_id: str):
+
+async def get_requirement_by_id(requirement_id: str) -> Requirement:
+    """Service helper to fetch a requirement or raise 404"""
+    requirement = await db.requirements.find_one({"id": requirement_id})
+    if not requirement:
+        raise HTTPException(status_code=404, detail="Requirement not found")
+    return Requirement(**parse_from_mongo(requirement))
+
+
+async def delete_requirement_with_logging(requirement_id: str, actor: Optional[str] = None) -> None:
+    """Delete a requirement, clean up relationships, and log deletion"""
+    # Get requirement to find relationships
+    requirement = await db.requirements.find_one({"id": requirement_id})
+    if not requirement:
+        raise HTTPException(status_code=404, detail="Requirement not found")
+
+    # Remove this requirement from all parent-child relationships
+    parent_ids = requirement.get("parent_ids", [])
+    child_ids = requirement.get("child_ids", [])
+
+    # Remove from parents' child_ids
+    for parent_id in parent_ids:
+        await db.requirements.update_one(
+            {"id": parent_id},
+            {"$pull": {"child_ids": requirement_id}}
+        )
+
+    # Remove from children's parent_ids
+    for child_id in child_ids:
+        await db.requirements.update_one(
+            {"id": child_id},
+            {"$pull": {"parent_ids": requirement_id}}
+        )
+
+    # Delete the requirement document
+    await db.requirements.delete_one({"id": requirement_id})
+
+    # Log deletion with basic identifying info if available
+    req_id = requirement.get("req_id", requirement_id)
+    title = requirement.get("title", "")
+    description = f"Requirement {req_id} deleted"
+    if title:
+        description += f" (title: {title})"
+
+    await create_change_log_entry(
+        requirement_id=requirement_id,
+        change_type="deleted",
+        change_description=description,
+        changed_by=actor or "System",
+    )
+
     requirement = await db.requirements.find_one({"id": requirement_id})
     if not requirement:
         raise HTTPException(status_code=404, detail="Requirement not found")
