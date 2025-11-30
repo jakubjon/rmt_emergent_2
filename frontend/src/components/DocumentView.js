@@ -126,6 +126,7 @@ const DocumentView = ({ activeProject, activeGroup, groups }) => {
         prev.map((req) => (req.id === editingRequirement.id ? response.data : req))
       );
 
+      setEditingRequirement(null);
       setShowEditDialog(false);
       toast.success('Requirement updated successfully');
     } catch (error) {
