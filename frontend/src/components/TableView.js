@@ -187,10 +187,10 @@ const TableView = ({ activeProject, activeGroup, groups }) => {
       setParentRequirements(parentDetails);
       setChildRequirements(childDetails);
       
-      // Fetch change log
+      // Fetch change log via shared hook
       try {
-        const changeLogResponse = await axios.get(`${API}/requirements/${requirement.id}/changelog`);
-        setChangeLog(changeLogResponse.data);
+        const logEntries = await fetchChangeLog(requirement.id);
+        setChangeLog(logEntries);
       } catch (changeLogError) {
         console.error('Error fetching change log:', changeLogError);
         setChangeLog([]);
