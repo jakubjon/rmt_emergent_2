@@ -174,24 +174,79 @@ const GraphView = ({ activeProject, activeGroup, groups }) => {
     console.log('Filtered requirements:', filteredRequirements.length);
     console.log('All requirements:', requirements.length);
 
-    // Create nodes with selection highlighting
-    const newNodes = filteredRequirements.map((req, index) => ({
-      id: req.id,
-      type: 'requirement',
-      position: { 
-        x: (index % 5) * 300 + Math.random() * 50, 
-        y: Math.floor(index / 5) * 200 + Math.random() * 50 
-      },
-      data: {
-        ...req,
-        label: req.title,
-      },
-      selected: firstSelectedNode?.id === req.id,
-      style: {
-        border: firstSelectedNode?.id === req.id ? '3px solid #3b82f6' : undefined,
-        boxShadow: firstSelectedNode?.id === req.id ? '0 0 10px rgba(59, 130, 246, 0.5)' : undefined,
+    // Group requirements by group_id for positioning
+    const groupedRequirements = {};
+    filteredRequirements.forEach(req => {
+      if (!groupedRequirements[req.group_id]) {
+        groupedRequirements[req.group_id] = [];
       }
-    }));
+      groupedRequirements[req.group_id].push(req);
+    });
+
+    // Create nodes with group-based positioning
+    const newNodes = [];
+    let groupXOffset = 0;
+    
+    // Create group background nodes first
+    Object.entries(groupedRequirements).forEach(([groupId, groupReqs], groupIndex) => {
+      const group = groups.find(g => g.id === groupId);
+      const groupColor = getGroupColor(groupId);
+      
+      // Calculate group bounds
+      const nodesPerRow = Math.min(3, groupReqs.length);
+      const groupWidth = nodesPerRow * 280 + 40;
+      const groupHeight = Math.ceil(groupReqs.length / nodesPerRow) * 200 + 100;
+      
+      // Add group background node
+      newNodes.push({
+        id: `group-${groupId}`,
+        type: 'group',
+        position: { x: groupXOffset, y: 50 },
+        data: {
+          label: group?.name || 'Unknown Group',
+          color: groupColor,
+        },
+        style: {
+          width: groupWidth,
+          height: groupHeight,
+          background: `${groupColor}15`,
+          border: `2px dashed ${groupColor}60`,
+          borderRadius: '12px',
+          zIndex: -1,
+        },
+        draggable: false,
+        selectable: false,
+      });
+      
+      // Add requirement nodes within group
+      groupReqs.forEach((req, index) => {
+        const row = Math.floor(index / nodesPerRow);
+        const col = index % nodesPerRow;
+        
+        newNodes.push({
+          id: req.id,
+          type: 'requirement',
+          position: { 
+            x: groupXOffset + 20 + col * 280, 
+            y: 80 + row * 200 
+          },
+          data: {
+            ...req,
+            label: req.title,
+            groupColor: groupColor,
+          },
+          selected: firstSelectedNode?.id === req.id,
+          style: {
+            border: firstSelectedNode?.id === req.id ? '3px solid #3b82f6' : `2px solid ${groupColor}`,
+            boxShadow: firstSelectedNode?.id === req.id ? '0 0 10px rgba(59, 130, 246, 0.5)' : undefined,
+          },
+          parentNode: `group-${groupId}`,
+          extent: 'parent',
+        });
+      });
+      
+      groupXOffset += groupWidth + 50; // Spacing between groups
+    });
 
     // Create edges from parent-child relationships - FIXED VERSION
     const newEdges = [];
