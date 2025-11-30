@@ -196,6 +196,7 @@ function App() {
                   <DocumentView 
                     activeProject={activeProject} 
                     activeGroup={activeGroup}
+                    groups={groups}
                   />
                 } 
               />
