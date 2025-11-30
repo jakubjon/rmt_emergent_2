@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import axios from 'axios';
-import '@/App.css';
+import './App.css';
 import SideNavigation from './components/SideNavigation';
 import Dashboard from './components/Dashboard';
 import TableView from './components/TableView';
