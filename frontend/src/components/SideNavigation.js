@@ -128,7 +128,7 @@ const SideNavigation = ({
         </div>
 
         {/* User Section */}
-        <SectionHeader section="user" title="User">
+        <SectionHeader section="user" title="User" expandedSections={expandedSections} toggleSection={toggleSection}>
           <div className="space-y-2 ml-2">
             <div className="flex items-center space-x-2 p-2 rounded-lg bg-slate-50">
               <User className="h-4 w-4 text-slate-600" />
