@@ -25,6 +25,9 @@ const DocumentView = ({ activeProject, activeGroup, groups }) => {
   const [requirements, setRequirements] = useState([]);
   const [chapters, setChapters] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [editingRequirement, setEditingRequirement] = useState(null);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+
   const [expandedChapters, setExpandedChapters] = useState({});
 
   useEffect(() => {
