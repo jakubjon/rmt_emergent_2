@@ -147,7 +147,7 @@ const SideNavigation = ({
         </SectionHeader>
 
         {/* Admin Section */}
-        <SectionHeader section="admin" title="Admin">
+        <SectionHeader section="admin" title="Admin" expandedSections={expandedSections} toggleSection={toggleSection}>
           <div className="space-y-2 ml-2">
             <Button 
               variant="ghost" 
