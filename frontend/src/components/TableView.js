@@ -37,6 +37,12 @@ const TableView = ({ activeProject, activeGroup, groups }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredRequirements, setFilteredRequirements] = useState([]);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [showViewDialog, setShowViewDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [selectedRequirement, setSelectedRequirement] = useState(null);
+  const [editRequirement, setEditRequirement] = useState(null);
+  const [parentRequirements, setParentRequirements] = useState([]);
+  const [childRequirements, setChildRequirements] = useState([]);
   const [newRequirement, setNewRequirement] = useState({
     title: '',
     text: '',
