@@ -118,43 +118,6 @@ const DocumentView = ({ activeProject, activeGroup, groups }) => {
     requirements.forEach(req => {
       const chapterId = req.chapter_id || 'no-chapter';
       if (grouped[chapterId]) {
-  const handleEditRequirement = (requirement) => {
-    setEditingRequirement({ ...requirement });
-    setShowEditDialog(true);
-  };
-
-  const handleUpdateRequirement = async () => {
-    if (!editingRequirement?.title?.trim() || !editingRequirement?.text?.trim()) {
-      toast.error('Please fill in both title and text');
-      return;
-    }
-
-    try {
-      const updatePayload = {
-        title: editingRequirement.title,
-        text: editingRequirement.text,
-        status: editingRequirement.status,
-        verification_methods: editingRequirement.verification_methods || [],
-      };
-
-      const response = await axios.put(
-        `${API}/requirements/${editingRequirement.id}`,
-        updatePayload
-      );
-
-      // Update local requirements state
-      setRequirements((prev) =>
-        prev.map((req) => (req.id === editingRequirement.id ? response.data : req))
-      );
-
-      setShowEditDialog(false);
-      toast.success('Requirement updated successfully');
-    } catch (error) {
-      console.error('Error updating requirement from DocumentView:', error);
-      toast.error('Failed to update requirement');
-    }
-  };
-
         grouped[chapterId].requirements.push(req);
       }
     });
