@@ -193,34 +193,42 @@ const GraphView = ({ activeProject, activeGroup, groups }) => {
       }
     }));
 
-    // Create edges from parent-child relationships - ALLOW CROSS-GROUP RELATIONSHIPS
+    // Create edges from parent-child relationships - FIXED VERSION
     const newEdges = [];
-    requirements.forEach(req => {
-      req.child_ids?.forEach(childId => {
-        // Create edge if parent is visible and child exists (even in different group)
-        const parentVisible = filteredRequirements.some(r => r.id === req.id);
-        const childExists = requirements.some(r => r.id === childId);
-        const childVisible = filteredRequirements.some(r => r.id === childId);
-        
-        // Show edge if both parent and child are visible, OR if one is visible and we want to show cross-group relations
-        if (parentVisible && childExists && childVisible) {
-          newEdges.push({
-            id: `${req.id}-${childId}`,
-            source: req.id,
-            target: childId,
-            type: 'smoothstep',
-            animated: false,
-            style: { stroke: '#10b981', strokeWidth: 3 },
-            markerEnd: {
-              type: 'arrowclosed',
-              color: '#10b981',
-            },
-          });
-        }
-      });
+    filteredRequirements.forEach(req => {
+      if (req.child_ids && req.child_ids.length > 0) {
+        req.child_ids.forEach(childId => {
+          // Only create edge if both parent and child are in filtered requirements
+          const childVisible = filteredRequirements.some(r => r.id === childId);
+          
+          if (childVisible) {
+            const edge = {
+              id: `edge-${req.id}-${childId}`,
+              source: req.id,
+              target: childId,
+              type: 'default',
+              animated: false,
+              style: { 
+                stroke: '#10b981', 
+                strokeWidth: 2 
+              },
+              markerEnd: {
+                type: 'arrowclosed',
+                color: '#10b981',
+                width: 20,
+                height: 20
+              },
+              label: '',
+            };
+            newEdges.push(edge);
+            console.log('Created edge:', edge);
+          }
+        });
+      }
     });
 
-    console.log('Generated edges:', newEdges);
+    console.log('Total edges created:', newEdges.length);
+    console.log('All edges:', newEdges);
 
     setNodes(newNodes);
     setEdges(newEdges);
