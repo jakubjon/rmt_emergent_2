@@ -395,7 +395,7 @@ const SideNavigation = ({
         </SectionHeader>
 
         {/* Requirement Management Section */}
-        <SectionHeader section="requirements" title="Requirement Management">
+        <SectionHeader section="requirements" title="Requirement Management" expandedSections={expandedSections} toggleSection={toggleSection}>
           <div className="space-y-2 ml-2">
             <Button 
               variant={currentView === 'dashboard' ? 'default' : 'ghost'}
