@@ -345,8 +345,20 @@ const GraphView = ({ activeProject, activeGroup, groups }) => {
 
   // Handle edge deletion
   const handleDeleteSelectedEdge = async () => {
-    // This would be called when user selects an edge and presses Delete
-    // For now, we'll implement a simpler version
+    if (!selectedEdge) return;
+    
+    try {
+      // Extract parent and child IDs from edge ID
+      const edgeIdParts = selectedEdge.id.split('-');
+      const parentId = edgeIdParts[1];
+      const childId = edgeIdParts[2];
+      
+      await deleteRelationship(parentId, childId);
+      setSelectedEdge(null);
+    } catch (error) {
+      console.error('Error deleting selected edge:', error);
+      toast.error('Failed to delete relationship');
+    }
   };
 
   // Handle edge click for deletion
