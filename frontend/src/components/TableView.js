@@ -227,12 +227,7 @@ const TableView = ({ activeProject, activeGroup, groups }) => {
         verification_methods: editRequirement.verification_methods.filter(Boolean)
       };
 
-      const response = await axios.put(`${API}/requirements/${editRequirement.id}`, updateData);
-      
-      // Update requirement in list
-      setRequirements(prev => 
-        prev.map(req => req.id === editRequirement.id ? response.data : req)
-      );
+      await updateRequirement(editRequirement.id, updateData);
       
       setShowEditDialog(false);
       setEditRequirement(null);
