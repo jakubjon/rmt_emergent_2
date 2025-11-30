@@ -350,14 +350,18 @@ const GraphView = ({ activeProject, activeGroup, groups }) => {
   }, [isCtrlPressed, firstSelectedNode, setEdges]);
 
   // Handle edge deletion
-  const handleDeleteSelectedEdge = async () => {
+  const handleDeleteSelectedEdge = useCallback(async () => {
     if (!selectedEdge) return;
     
     try {
-      // Extract parent and child IDs from edge ID
-      const edgeIdParts = selectedEdge.id.split('-');
-      const parentId = edgeIdParts[1];
-      const childId = edgeIdParts[2];
+      // Use React Flow's source/target instead of parsing the ID
+      const parentId = selectedEdge.source;
+      const childId = selectedEdge.target;
+
+      if (!parentId || !childId) {
+        console.error('Selected edge is missing source or target', selectedEdge);
+        return;
+      }
       
       await deleteRelationship(parentId, childId);
       setSelectedEdge(null);
@@ -365,7 +369,7 @@ const GraphView = ({ activeProject, activeGroup, groups }) => {
       console.error('Error deleting selected edge:', error);
       toast.error('Failed to delete relationship');
     }
-  };
+  }, [selectedEdge]);
 
   // Handle edge click for selection
   const handleEdgeClick = useCallback((event, edge) => {
