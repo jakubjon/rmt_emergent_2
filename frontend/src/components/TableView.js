@@ -64,9 +64,9 @@ const TableView = ({ activeProject, activeGroup, groups }) => {
 
   useEffect(() => {
     if (activeProject?.id) {
-      fetchRequirements();
+      loadRequirements({ projectId: activeProject.id, groupId: activeGroup?.id });
     }
-  }, [activeProject, activeGroup]);
+  }, [activeProject, activeGroup, loadRequirements]);
 
   useEffect(() => {
     // Filter requirements based on search query
