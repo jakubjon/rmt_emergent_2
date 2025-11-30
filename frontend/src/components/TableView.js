@@ -299,19 +299,6 @@ const TableView = ({ activeProject, activeGroup, groups }) => {
     reader.readAsText(file);
   };
 
-        verification_methods: [],
-        group_id: '',
-        chapter_id: ''
-      });
-      
-      setShowCreateDialog(false);
-      toast.success('Requirement created successfully!');
-    } catch (error) {
-      console.error('Error creating requirement:', error);
-      toast.error('Failed to create requirement');
-    }
-  };
-
   const handleVerificationMethodChange = (method, checked) => {
     setNewRequirement(prev => ({
       ...prev,
