@@ -263,7 +263,7 @@ const GraphView = ({ activeProject, activeGroup, groups }) => {
             sourceHandle: 'source',
             targetHandle: 'target',
             type: 'smoothstep',
-            animated: true,
+            animated: false,
             style: { 
               stroke: '#10b981', 
               strokeWidth: 3 
@@ -272,7 +272,6 @@ const GraphView = ({ activeProject, activeGroup, groups }) => {
               type: 'arrowclosed',
               color: '#10b981',
             },
-            label: `${req.req_id} → ${childRequirement.req_id}`,
           };
           newEdges.push(edge);
         }
