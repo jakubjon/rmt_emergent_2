@@ -112,6 +112,7 @@ const RequirementNode = ({ data, selected }) => {
 // Define custom node types
 const nodeTypes = {
   requirement: RequirementNode,
+  group: GroupNode,
 };
 
 const GraphView = ({ activeProject, activeGroup, groups }) => {
