@@ -379,7 +379,7 @@ const SideNavigation = ({
         <Separator className="my-6" />
 
         {/* System Architecture Section */}
-        <SectionHeader section="system" title="System Architecture">
+        <SectionHeader section="system" title="System Architecture" expandedSections={expandedSections} toggleSection={toggleSection}>
           <div className="ml-2">
             <Button 
               variant={currentView === 'graph' ? 'default' : 'ghost'}
