@@ -1336,89 +1336,168 @@ const TableView = ({ activeProject, activeGroup, groups }) => {
                     className="table-row hover:bg-slate-50 transition-colors"
                     data-testid={`requirement-row-${requirement.id}`}
                   >
-                    <td className="px-4 py-4 whitespace-nowrap text-sm text-slate-900">
-                      <input
-                        type="checkbox"
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                        checked={selectedIds.includes(requirement.id)}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setSelectedIds((prev) => [...prev, requirement.id]);
-                          } else {
-                            setSelectedIds((prev) => prev.filter((id) => id !== requirement.id));
-                          }
-                        }}
-                      />
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900">
-                      {requirement.req_id}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-slate-900">
-                      <div className="max-w-xs">
-                        <p className="font-medium text-overflow" title={requirement.title}>
-                          {requirement.title}
-                        </p>
-                        <p className="text-slate-500 text-xs multiline-overflow mt-1" title={requirement.text}>
-                          {requirement.text}
-                        </p>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <Badge 
-                        variant="outline" 
-                        className={getStatusBadgeClass(requirement.status)}
-                      >
-                        {requirement.status}
-                      </Badge>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex flex-wrap gap-1">
-                        {requirement.verification_methods?.map((method, index) => (
-                          <Badge 
-                            key={index}
-                            variant="secondary"
-                            className={`text-xs ${getVerificationBadgeClass(method)}`}
+                    {columnOrder.map((colKey) => {
+                      const style = columnWidths[colKey]
+                        ? { width: columnWidths[colKey], minWidth: columnWidths[colKey] }
+                        : undefined;
+
+                      if (colKey === 'select') {
+                        return (
+                          <td
+                            key={colKey}
+                            className="px-4 py-4 whitespace-nowrap text-sm text-slate-900"
+                            style={style}
                           >
-                            {method.charAt(0)}
-                          </Badge>
-                        ))}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 text-center">
-                      {requirement.parent_ids?.length || 0}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 text-center">
-                      {requirement.child_ids?.length || 0}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                      <div className="flex items-center justify-end space-x-2">
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          onClick={() => handleViewRequirement(requirement)}
-                          data-testid={`view-requirement-${requirement.id}`}
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          onClick={() => handleEditRequirement(requirement)}
-                          data-testid={`edit-requirement-${requirement.id}`}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className="text-red-600 hover:text-red-700"
-                          onClick={() => handleDeleteRequirement(requirement)}
-                          data-testid={`delete-requirement-${requirement.id}`}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </td>
+                            <input
+                              type="checkbox"
+                              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                              checked={selectedIds.includes(requirement.id)}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setSelectedIds((prev) => [...prev, requirement.id]);
+                                } else {
+                                  setSelectedIds((prev) => prev.filter((id) => id !== requirement.id));
+                                }
+                              }}
+                            />
+                          </td>
+                        );
+                      }
+
+                      if (colKey === 'id') {
+                        return (
+                          <td
+                            key={colKey}
+                            className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900"
+                            style={style}
+                          >
+                            {requirement.req_id}
+                          </td>
+                        );
+                      }
+
+                      if (colKey === 'title') {
+                        return (
+                          <td
+                            key={colKey}
+                            className="px-6 py-4 text-sm text-slate-900"
+                            style={style}
+                          >
+                            <div className="max-w-xs">
+                              <p className="font-medium text-overflow" title={requirement.title}>
+                                {requirement.title}
+                              </p>
+                              <p className="text-slate-500 text-xs multiline-overflow mt-1" title={requirement.text}>
+                                {requirement.text}
+                              </p>
+                            </div>
+                          </td>
+                        );
+                      }
+
+                      if (colKey === 'status') {
+                        return (
+                          <td
+                            key={colKey}
+                            className="px-6 py-4 whitespace-nowrap"
+                            style={style}
+                          >
+                            <Badge 
+                              variant="outline" 
+                              className={getStatusBadgeClass(requirement.status)}
+                            >
+                              {requirement.status}
+                            </Badge>
+                          </td>
+                        );
+                      }
+
+                      if (colKey === 'verification') {
+                        return (
+                          <td
+                            key={colKey}
+                            className="px-6 py-4"
+                            style={style}
+                          >
+                            <div className="flex flex-wrap gap-1">
+                              {requirement.verification_methods?.map((method, index) => (
+                                <Badge 
+                                  key={index}
+                                  variant="secondary"
+                                  className={`text-xs ${getVerificationBadgeClass(method)}`}
+                                >
+                                  {method.charAt(0)}
+                                </Badge>
+                              ))}
+                            </div>
+                          </td>
+                        );
+                      }
+
+                      if (colKey === 'parents') {
+                        return (
+                          <td
+                            key={colKey}
+                            className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 text-center"
+                            style={style}
+                          >
+                            {requirement.parent_ids?.length || 0}
+                          </td>
+                        );
+                      }
+
+                      if (colKey === 'children') {
+                        return (
+                          <td
+                            key={colKey}
+                            className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 text-center"
+                            style={style}
+                          >
+                            {requirement.child_ids?.length || 0}
+                          </td>
+                        );
+                      }
+
+                      if (colKey === 'actions') {
+                        return (
+                          <td
+                            key={colKey}
+                            className="px-6 py-4 whitespace-nowrap text-right text-sm"
+                            style={style}
+                          >
+                            <div className="flex items-center justify-end space-x-2">
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                onClick={() => handleViewRequirement(requirement)}
+                                data-testid={`view-requirement-${requirement.id}`}
+                              >
+                                <Eye className="h-4 w-4" />
+                              </Button>
+                              <Button 
+                                variant="ghost" 
+                                size="sm"
+                                onClick={() => handleEditRequirement(requirement)}
+                                data-testid={`edit-requirement-${requirement.id}`}
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="text-red-600 hover:text-red-700"
+                                onClick={() => handleDeleteRequirement(requirement)}
+                                data-testid={`delete-requirement-${requirement.id}`}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </td>
+                        );
+                      }
+
+                      return null;
+                    })}
                   </tr>
                 ))
               )}
