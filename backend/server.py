@@ -376,8 +376,38 @@ async def update_requirement(requirement_id: str, update_data: RequirementUpdate
     if not current_req:
         raise HTTPException(status_code=404, detail="Requirement not found")
     
-    # Update only provided fields
-    update_dict = {k: v for k, v in update_data.dict().items() if v is not None}
+    # Track changes for logging
+    changes = []
+    update_dict = {}
+    
+    for field, new_value in update_data.dict().items():
+        if new_value is not None:
+            old_value = current_req.get(field)
+            
+            # Convert lists to strings for comparison
+            if isinstance(old_value, list):
+                old_value_str = ", ".join(old_value) if old_value else "None"
+            else:
+                old_value_str = str(old_value) if old_value else "None"
+                
+            if isinstance(new_value, list):
+                new_value_str = ", ".join(new_value) if new_value else "None"
+            else:
+                new_value_str = str(new_value)
+            
+            # Check if value actually changed
+            if old_value != new_value:
+                update_dict[field] = new_value
+                changes.append({
+                    "field": field,
+                    "old_value": old_value_str,
+                    "new_value": new_value_str
+                })
+    
+    if not changes:
+        # No actual changes, return current requirement
+        return Requirement(**parse_from_mongo(current_req))
+    
     update_dict["updated_at"] = datetime.now(timezone.utc).isoformat()
     
     # Handle parent-child relationships
@@ -406,6 +436,28 @@ async def update_requirement(requirement_id: str, update_data: RequirementUpdate
     
     if result.modified_count == 0:
         raise HTTPException(status_code=404, detail="Requirement not found")
+    
+    # Create change log entries
+    for change in changes:
+        field_display_names = {
+            "title": "Title",
+            "text": "Description", 
+            "status": "Status",
+            "verification_methods": "Verification Methods",
+            "group_id": "Group",
+            "chapter_id": "Chapter"
+        }
+        
+        field_display = field_display_names.get(change["field"], change["field"].replace("_", " ").title())
+        
+        await create_change_log_entry(
+            requirement_id=requirement_id,
+            change_type="updated",
+            field_name=change["field"],
+            old_value=change["old_value"],
+            new_value=change["new_value"],
+            change_description=f"{field_display} changed from '{change['old_value']}' to '{change['new_value']}'"
+        )
     
     updated_req = await db.requirements.find_one({"id": requirement_id})
     return Requirement(**parse_from_mongo(updated_req))
